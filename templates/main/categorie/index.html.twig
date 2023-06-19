@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} Gestion liste des domaines{% endblock %}
+{% block title %}{{ parent() }} Gestion liste des categories{% endblock %}
 
 {% block body %}
 
@@ -9,12 +9,12 @@
             <div class="card-body px-4 py-3">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h4 class="fw-semibold mb-8">Gestion des domaines</h4>
+                        <h4 class="fw-semibold mb-8">Gestion des categories</h4>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Produits</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Domaines</li>
+                                <li class="breadcrumb-item" aria-current="page">categories</li>
                             </ol>
                         </nav>
                     </div>
@@ -35,7 +35,8 @@
                                 <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
                                 <div class="col">
                                     <div class="action">
-                                        <a href="{{ path('app_main_domaine_index') }}" class="btn btn-primary"><i class="ti-list"></i>&nbsp;  Retour à la liste</a>
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#primary-header-modal"><i class="ti-plus"></i> Ajouter</button>
                                     </div>
                                 </div>
                             </div>
@@ -48,21 +49,25 @@
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
                                         <th class="text-center text-uppercase">Code</th>
+                                        <th class="text-center text-uppercase">Domaines</th>
                                         <th class="text-center text-uppercase">Libelle</th>
                                         <th class="text-center text-uppercase">Produits</th>
                                         <th class="text-center text-uppercase">actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for categorie in domaine.categories %}
+                                    {% for categorie in categories %}
                                         <tr>
-                                            <td>{{ loop.index }}</td>
+                                            <td>{{ categorie.id }}</td>
                                             <td class="text-center">{{ categorie.code }}</td>
+                                            <td>{{ categorie.domaine.libelle}}</td>
                                             <td>{{ categorie.libelle }}</td>
                                             <td class="text-center">{{ categorie.produits|length }}</td>
                                             <td class="text-center">
-                                                <a href="{{ path('app_main_domaine_show', {'id': categorie.id}) }}"><i class="ti-receipt"></i></a>
-                                                &nbsp; | &nbsp;
+                                                {% if categorie.produits|length > 0 %}
+                                                    <a href="{{ path('app_main_categorie_show', {'id': categorie.id}) }}"><i class="ti-receipt"></i></a>
+                                                    &nbsp; | &nbsp;
+                                                {% endif %}
                                                 <a href="{{ path('app_main_categorie_edit', {'id': categorie.id}) }}"><i class="ti-pencil-alt"></i></a>
                                             </td>
                                         </tr>
@@ -80,6 +85,11 @@
                 </div>
             </div>
         </section>
+
+        <div id="primary-header-modal" class="modal fade" tabindex="-1" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
+            {{ include('main/categorie/_form.html.twig') }}
+        </div>
+
 
     </div>
 
@@ -100,11 +110,5 @@
                 'copy', 'excel', 'pdf'
             ]
         } );
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var modal = new bootstrap.Modal(document.getElementById("primary-header-modal"));
-            modal.show();
-        });
     </script>
 {% endblock %}

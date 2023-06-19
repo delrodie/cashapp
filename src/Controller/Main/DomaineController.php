@@ -97,6 +97,12 @@ class DomaineController extends AbstractController
     public function delete(Request $request, Domaine $domaine, DomaineRepository $domaineRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$domaine->getId(), $request->request->get('_token'))) {
+            // Si le domaine est concerné par des catégories alors renvoie au show
+//            dd(!count($domaine->getCategories()));
+            if (count($domaine->getCategories()) > 0){
+                notyf()->addError("Echèc: le domaine {$domaine->getLibelle()} contient des catégories. Veuillez les supprimer d'abord.");
+                return $this->redirectToRoute('app_main_domaine_show',['id'=>$domaine->getId()]);
+            }
             $domaineRepository->remove($domaine, true);
 
             notyf()->addSuccess("Le domaine {$domaine->getLibelle()} a été supprimé avec succès!");
