@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Repository\Main\CategorieRepository;
 use App\Repository\Main\DomaineRepository;
+use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
@@ -11,7 +12,7 @@ class Utilities
 {
     public function __construct(
         private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
-        private ProduitRepository $produitRepository
+        private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository
     )
     {
     }
@@ -57,6 +58,19 @@ class Utilities
         }
 
         return $produit->getCategorie()->getCode().''.substr($produit->getReference(), -4);
+    }
+
+    /**
+     * Generation du code du fournisseur
+     *
+     * @return string
+     */
+    public function codeFournisseur(): string
+    {
+        $lastFournisseur = $this->fournisseurRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastFournisseur) return "F101";
+
+        return "F". $lastFournisseur->getId() + 101;
     }
 
     /**
