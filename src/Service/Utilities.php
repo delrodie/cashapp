@@ -4,12 +4,14 @@ namespace App\Service;
 
 use App\Repository\Main\CategorieRepository;
 use App\Repository\Main\DomaineRepository;
+use App\Repository\Main\ProduitRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class Utilities
 {
     public function __construct(
-        private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository
+        private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
+        private ProduitRepository $produitRepository
     )
     {
     }
@@ -43,6 +45,18 @@ class Utilities
         }
 
         return $categorie->getDomaine()->getCode().''. $categorie->getId();
+    }
+
+    public function referenceProduit(object $produit, bool $update=false): string
+    {
+        if (!$update){
+            $lastProduit = $this->produitRepository->findOneBy([],['id'=>"DESC"]);
+            if (!$lastProduit) return $produit->getCategorie()->getCode().''. 1001;
+
+            return $produit->getCategorie()->getCode().''. $lastProduit->getId() + 1001;
+        }
+
+        return $produit->getCategorie()->getCode().''.substr($produit->getReference(), -4);
     }
 
     /**
