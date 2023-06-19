@@ -2,6 +2,7 @@
 
 namespace App\Entity\Archive;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -86,6 +87,119 @@ class Categorie
      * })
      */
     private $domaine;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getCode(): ?int
+    {
+        return $this->code;
+    }
+
+    public function setCode(?int $code): static
+    {
+        $this->code = $code;
+
+        return $this;
+    }
+
+    public function getLibelle(): ?string
+    {
+        return $this->libelle;
+    }
+
+    public function setLibelle(string $libelle): static
+    {
+        $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    public function getNombreproduit(): ?int
+    {
+        return $this->nombreproduit;
+    }
+
+    public function setNombreproduit(?int $nombreproduit): static
+    {
+        $this->nombreproduit = $nombreproduit;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getPubliePar(): ?string
+    {
+        return $this->publiePar;
+    }
+
+    public function setPubliePar(?string $publiePar): static
+    {
+        $this->publiePar = $publiePar;
+
+        return $this;
+    }
+
+    public function getModifiePar(): ?string
+    {
+        return $this->modifiePar;
+    }
+
+    public function setModifiePar(?string $modifiePar): static
+    {
+        $this->modifiePar = $modifiePar;
+
+        return $this;
+    }
+
+    public function getPublieLe(): ?\DateTimeInterface
+    {
+        return $this->publieLe;
+    }
+
+    public function setPublieLe(?\DateTimeInterface $publieLe): static
+    {
+        $this->publieLe = $publieLe;
+
+        return $this;
+    }
+
+    public function getModifieLe(): ?\DateTimeInterface
+    {
+        return $this->modifieLe;
+    }
+
+    public function setModifieLe(?\DateTimeInterface $modifieLe): static
+    {
+        $this->modifieLe = $modifieLe;
+
+        return $this;
+    }
+
+    public function getDomaine(): ?Domaine
+    {
+        return $this->domaine;
+    }
+
+    public function setDomaine(?Domaine $domaine): static
+    {
+        $this->domaine = $domaine;
+
+        return $this;
+    }
 
 
 }

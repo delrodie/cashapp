@@ -2,6 +2,7 @@
 
 namespace App\Entity\Archive;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -142,6 +143,215 @@ class Produit
      * })
      */
     private $categorie;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(?string $reference): static
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getCodebarre(): ?string
+    {
+        return $this->codebarre;
+    }
+
+    public function setCodebarre(?string $codebarre): static
+    {
+        $this->codebarre = $codebarre;
+
+        return $this;
+    }
+
+    public function getLibelle(): ?string
+    {
+        return $this->libelle;
+    }
+
+    public function setLibelle(string $libelle): static
+    {
+        $this->libelle = $libelle;
+
+        return $this;
+    }
+
+    public function getPrixachat(): ?int
+    {
+        return $this->prixachat;
+    }
+
+    public function setPrixachat(?int $prixachat): static
+    {
+        $this->prixachat = $prixachat;
+
+        return $this;
+    }
+
+    public function getPrixvente(): ?int
+    {
+        return $this->prixvente;
+    }
+
+    public function setPrixvente(?int $prixvente): static
+    {
+        $this->prixvente = $prixvente;
+
+        return $this;
+    }
+
+    public function getOldPrixachat(): ?int
+    {
+        return $this->oldPrixachat;
+    }
+
+    public function setOldPrixachat(?int $oldPrixachat): static
+    {
+        $this->oldPrixachat = $oldPrixachat;
+
+        return $this;
+    }
+
+    public function getOldPrixvente(): ?int
+    {
+        return $this->oldPrixvente;
+    }
+
+    public function setOldPrixvente(?int $oldPrixvente): static
+    {
+        $this->oldPrixvente = $oldPrixvente;
+
+        return $this;
+    }
+
+    public function getStock(): ?int
+    {
+        return $this->stock;
+    }
+
+    public function setStock(?int $stock): static
+    {
+        $this->stock = $stock;
+
+        return $this;
+    }
+
+    public function isVente(): ?bool
+    {
+        return $this->vente;
+    }
+
+    public function setVente(?bool $vente): static
+    {
+        $this->vente = $vente;
+
+        return $this;
+    }
+
+    public function isInventaire(): ?bool
+    {
+        return $this->inventaire;
+    }
+
+    public function setInventaire(?bool $inventaire): static
+    {
+        $this->inventaire = $inventaire;
+
+        return $this;
+    }
+
+    public function getSeuil(): ?int
+    {
+        return $this->seuil;
+    }
+
+    public function setSeuil(?int $seuil): static
+    {
+        $this->seuil = $seuil;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getPubliePar(): ?string
+    {
+        return $this->publiePar;
+    }
+
+    public function setPubliePar(?string $publiePar): static
+    {
+        $this->publiePar = $publiePar;
+
+        return $this;
+    }
+
+    public function getModifiePar(): ?string
+    {
+        return $this->modifiePar;
+    }
+
+    public function setModifiePar(?string $modifiePar): static
+    {
+        $this->modifiePar = $modifiePar;
+
+        return $this;
+    }
+
+    public function getPublieLe(): ?\DateTimeInterface
+    {
+        return $this->publieLe;
+    }
+
+    public function setPublieLe(?\DateTimeInterface $publieLe): static
+    {
+        $this->publieLe = $publieLe;
+
+        return $this;
+    }
+
+    public function getModifieLe(): ?\DateTimeInterface
+    {
+        return $this->modifieLe;
+    }
+
+    public function setModifieLe(?\DateTimeInterface $modifieLe): static
+    {
+        $this->modifieLe = $modifieLe;
+
+        return $this;
+    }
+
+    public function getCategorie(): ?Categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): static
+    {
+        $this->categorie = $categorie;
+
+        return $this;
+    }
 
 
 }

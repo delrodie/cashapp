@@ -216,3 +216,241 @@ Assurez-vous d'exécuter ces commandes dans l'environnement approprié et de sui
 
 *6. Generer les setters et getters des entités importées
 `bin/console doctrine:maker --regenerate App\Entity\Archive\Domaine`
+
+*7. Copie des données des tables archives dans les nouvelles tables Domaine, Categorie et Produit
+`
+<?php
+
+namespace App\Command;
+
+use App\Entity\Main\Domaine;
+use App\Repository\Archive\ArchiveDomaineRepository;
+use App\Repository\Main\DomaineRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'app:copy-domaine',
+    description: 'Copie des données de la table archive domaine dans la nouvelle table domaine.',
+)]
+class CopyDomaineCommand extends Command
+{
+    public function __construct(
+        private EntityManagerInterface $entityManager, private ArchiveDomaineRepository $archiveDomaineRepository
+    )
+    {
+        parent::__construct();
+    }
+
+//    protected function configure(): void
+//    {
+//        $this
+//            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+//            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+//        ;
+//    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        $progressBar = new ProgressBar($output);
+        $progressBar->start();
+
+        //$test = $this->entityManager->getRepository()
+//        $archiveRepo = $this->domaineRepository->
+        $nouveauRepo = $this->entityManager->getRepository(Domaine::class);
+        $archiveDomaines = $this->archiveDomaineRepository->findAll();
+
+        $nb=0;
+        foreach ($archiveDomaines as $domaine){
+            // Verification de la non existence de l'information dans la table
+            $verif = $nouveauRepo->findOneBy(['slug' => $domaine->getSlug()]);
+            if (!$verif) {
+                $nvDomaine = new Domaine();
+                $nvDomaine->setCode($domaine->getCode());
+                $nvDomaine->setLibelle($domaine->getLibelle());
+                $nvDomaine->setSlug($domaine->getSlug());
+
+                $this->entityManager->persist($nvDomaine);
+                $progressBar->advance();
+                $nb++;
+            }
+        }
+
+        $this->entityManager->flush();
+        $progressBar->finish();
+
+        $io->success("Les {$nb} lignes de domaines ont été copiées avec succès!");
+
+        return Command::SUCCESS;
+    }
+}
+`
+`
+<?php
+
+namespace App\Command;
+
+use App\Entity\Main\Categorie;
+use App\Repository\Archive\ArchiveCategorieRepository;
+use App\Repository\Main\CategorieRepository;
+use App\Repository\Main\DomaineRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'app:copy-categorie',
+    description: 'Copie des données de la table archive Categorie dans la nouvelle table categorie',
+)]
+class CopyCategorieCommand extends Command
+{
+    public function __construct(
+        private EntityManagerInterface $entityManager, private DomaineRepository $domaineRepository,
+        private ArchiveCategorieRepository $archiveCategorieRepository, private CategorieRepository $categorieRepository
+    )
+    {
+        parent::__construct();
+    }
+//    protected function configure(): void
+//    {
+//        $this
+//            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+//            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+//        ;
+//    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        $io = new SymfonyStyle($input, $output);
+        $progressBar = new ProgressBar($output);
+        $progressBar->start();
+
+        $archiveCategories = $this->archiveCategorieRepository->findAll();
+
+        $nb=0;
+        foreach ($archiveCategories as $category){
+            $verif = $this->categorieRepository->findOneBy(['slug' => $category->getSlug()]);
+            $nvDomaine = $this->domaineRepository->findOneBy(['slug' =>$category->getDomaine()->getSlug()]);
+
+            if (!$verif AND $nvDomaine){
+                $nvCategorie = new Categorie();
+                $code = $nvDomaine->getCode().''. 10+$nb;
+                $nvCategorie->setCode($code);
+                $nvCategorie->setLibelle($category->getLibelle());
+                $nvCategorie->setDomaine($nvDomaine);
+                $nvCategorie->setSlug($category->getSlug());
+
+                $this->entityManager->persist($nvCategorie);
+                $nb++;
+                $progressBar->advance();
+            }
+        }
+
+        $this->entityManager->flush();
+        $progressBar->finish();
+
+        $io->success("Les {$nb} lignes de catégories ont été copiées avec succès.");
+
+        return Command::SUCCESS;
+    }
+
+}
+`
+`
+<?php
+
+namespace App\Command;
+
+use App\Entity\Main\Produit;
+use App\Repository\Archive\ArchiveProduitRepository;
+use App\Repository\Main\CategorieRepository;
+use App\Repository\Main\ProduitRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'app:copy-produit',
+    description: 'Copie des données de la table archive Produit dans la nouvelle table Produit',
+)]
+class CopyProduitCommand extends Command
+{
+    public function __construct(
+        private EntityManagerInterface $entityManager, private ArchiveProduitRepository $archiveProduitRepository,
+        private ProduitRepository $produitRepository, private CategorieRepository $categorieRepository
+    )
+    {
+        parent::__construct();
+    }
+
+//    protected function configure(): void
+//    {
+//        $this
+//            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+//            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+//        ;
+//    }
+
+    protected function execute(InputInterface $input, OutputInterface $output): int
+    {
+        set_time_limit(300);
+        $io = new SymfonyStyle($input, $output);
+
+        // Création de l'objet ProgressBar
+        $progressBar = new ProgressBar($output);
+        $progressBar->start();
+
+        $archiveProduits = $this->archiveProduitRepository->getListProduitMoreThanZero();
+
+        $nb=0;
+        foreach ($archiveProduits as $produit){
+            $verif = $this->produitRepository->findOneBy(['slug' => $produit->getSlug()]);
+            $nvCategorie = $this->categorieRepository->findOneBy(['slug' => $produit->getCategorie()->getSlug()]);
+
+            if (!$verif AND $nvCategorie){
+                $nvProduit = new Produit();
+                $reference = $nvCategorie->getCode()."". 1001 + $nb;
+                $nvProduit->setReference($reference);
+                $nvProduit->setCodebarre($produit->getCodebarre());
+                $nvProduit->setLibelle($produit->getLibelle());
+                $nvProduit->setPrixAchat($produit->getPrixAchat());
+                $nvProduit->setPrixVente($produit->getPrixVente());
+                $nvProduit->setStock($produit->getStock());
+                $nvProduit->setSlug($produit->getSlug());
+                $nvProduit->setCategorie($nvCategorie);
+
+                $this->entityManager->persist($nvProduit);
+                $nb++;
+
+                $progressBar->advance();
+            }
+        }
+
+        $this->entityManager->flush();
+        $progressBar->finish();
+
+        $io->success("Les {$nb} lignes de la table archive Produit ont été copiées avec succès!");
+
+        return Command::SUCCESS;
+    }
+
+}
+`
