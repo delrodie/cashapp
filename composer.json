@@ -11,6 +11,7 @@
         "doctrine/doctrine-bundle": "*",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "*",
+        "php-flasher/flasher-notyf-symfony": "^1.15",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.22",
         "symfony/asset": "6.3.*",
