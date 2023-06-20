@@ -63,4 +63,15 @@ class ProduitRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    public function findByQuery(float|bool|int|string|null $query)
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->leftJoin('p.categorie', 'c')
+            ->where('p.libelle LIKE :query')
+            ->orWhere('c.libelle LIKE :query')
+            ->orderBy('p.libelle', 'ASC')
+            ->setParameter('query', "%{$query}%")
+            ->getQuery()->getResult();
+    }
 }

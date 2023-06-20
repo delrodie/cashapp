@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CategorieRepository;
 use App\Repository\Main\DomaineRepository;
 use App\Repository\Main\FournisseurRepository;
@@ -12,7 +13,8 @@ class Utilities
 {
     public function __construct(
         private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
-        private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository
+        private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
+        private AchatRepository $achatRepository
     )
     {
     }
@@ -71,6 +73,14 @@ class Utilities
         if (!$lastFournisseur) return "F101";
 
         return "F". $lastFournisseur->getId() + 101;
+    }
+
+    public function codeAchat()
+    {
+        $lastAchat = $this->achatRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastAchat) return 1001;
+
+        return $lastAchat->getId() + 1001;
     }
 
     /**

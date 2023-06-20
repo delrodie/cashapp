@@ -35,7 +35,7 @@
                                 <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
                                 <div class="col">
                                     <div class="action">
-                                        <a href="{{ absolute_url(path('app_main_achat_new')) }}" class="btn btn-primary">Ajouter</a>
+                                        <a href="{{ absolute_url(path('app_main_achat_index')) }}" class="btn btn-primary">Retour à la liste </a>
                                     </div>
                                 </div>
                             </div>
@@ -47,38 +47,55 @@
                                     <thead>
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
-                                        <th class="text-center text-uppercase">Code</th>
-                                        <th class="text-center text-uppercase">Date</th>
-                                        <th class="text-center text-uppercase">Fournisseurs</th>
-                                        <th class="text-center text-uppercase">Numéros</th>
+                                        <th class="text-center text-uppercase">References</th>
+                                        <th class="text-center text-uppercase">Produits</th>
+                                        <th class="text-center text-uppercase">Quantites</th>
                                         <th class="text-center text-uppercase">Montants</th>
                                         <th class="text-center text-uppercase">Benefices</th>
-                                        <th class="text-center text-uppercase">actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for achat in fournisseur.achats %}
+                                    {% for produit in achat.produits %}
                                         <tr>
                                             <td>{{ loop.index }}</td>
-                                            <td class="text-center">{{ achat.code }}</td>
-                                            <td class="text-center">{{ achat.dateAchat|date('Y-m-d') }}</td>
-                                            <td>{{ achat.fournisseur.nom }}</td>
-                                            <td>{{ achat.numFacture }}</td>
-                                            <td class="text-center">{{ achat.montant }}</td>
-                                            <td class="text-center">{{ achat.benefice }}</td>
-                                            <td class="text-center">
-                                                <a href="{{ absolute_url(path('app_main_achat_show',{id: achat.id})) }}"><i class="ti-receipt"></i></a>
-                                            </td>
-                                        </tr>
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="7">Aucun achat enregistré</td>
+                                            <td class="text-left">{{ produit.code }}</td>
+                                            <td class="text-left">{{ produit.libelle }}</td>
+                                            <td class="text-center">{{ produit.quantite }}</td>
+                                            <td class="text-end">{{ produit.montant }}</td>
+                                            <td class="text-center">{{ produit.benefice }}</td>
                                         </tr>
                                     {% endfor %}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <em>Fournisseur:</em> <strong>{{ achat.fournisseur.nom }}</strong>
+                                        </td>
+                                        <td>
+                                            <em>Facture:</em> <strong>{{ achat.numFacture }} / {{ achat.dateAchat|date('Y-m-d') }}</strong>
+                                        </td>
+                                        <td>
+                                            <em>Montant:</em> <strong>{{ achat.montant }}</strong> FCFA
+                                        </td>
+                                        <td>
+                                            <em>Benefice:</em> <strong>{{ achat.benefice }}</strong> FCFA
+                                        </td>
+                                    </tr>
                                     </tbody>
+                                    <tfoot>
+
+                                    </tfoot>
                                 </table>
                             </div>
-
+                            <div class="row">
+                                <div class="col mt-5">
+                                    <a href="{{ path('app_main_achat_delete', {'id': achat.id}) }}" class="btn btn-danger"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer cet achat?')"
+                                    >
+                                        <i class="ti-trash"></i>Supprimer
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

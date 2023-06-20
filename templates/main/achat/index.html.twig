@@ -57,7 +57,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for achat in fournisseur.achats %}
+                                    {% for achat in achats %}
                                         <tr>
                                             <td>{{ loop.index }}</td>
                                             <td class="text-center">{{ achat.code }}</td>
@@ -68,6 +68,8 @@
                                             <td class="text-center">{{ achat.benefice }}</td>
                                             <td class="text-center">
                                                 <a href="{{ absolute_url(path('app_main_achat_show',{id: achat.id})) }}"><i class="ti-receipt"></i></a>
+                                                &nbsp; | &nbsp;
+                                                <a href="{{ absolute_url(path('app_main_achat_delete',{id: achat.id})) }}" onclick="return confirm('Voulez-vous vriament supprimer cet achat?')"><i class="ti-trash"></i></a>
                                             </td>
                                         </tr>
                                     {% else %}

@@ -1,0 +1,363 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des achats{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des achats</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Approvisionnements</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Achats</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-truck"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Formulaire</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <a href="{{ path('app_main_achat_index') }}" class="btn btn-primary">Retour à la liste</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3">
+                                <div class="col-8 productList">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Liste des produits</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Produits</th>
+                                                    <th>Quantite</th>
+                                                    <th>Montant</th>
+                                                    <th>Benefice</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td colspan="2">Totaux</td>
+                                                    <td id="totalMontant" class="totaux rouge">0</td>
+                                                    <td id="totalBenefice" class="totaux">0</td>
+                                                    <td></td>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Formulaire</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="productForm">
+                                                <div class="row row-cols-1 g-4">
+                                                    <div class="col mt-3">
+                                                        <label for="">Produit</label>
+                                                        <input type="text" name="libelle" class="form-control" id="productLibelle">
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        <label for="">Quanité</label>
+                                                        <input type="number" name="quantite" class="form-control" id="productQuantite">
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        <label for="">Montant</label>
+                                                        <input type="number" name="montant" class="form-control" id="productMontant">
+                                                    </div>
+                                                    <span id="productPrixventeDisplay"></span>
+                                                    <div class="col mt-3 d-grid gap-2">
+                                                        <input type="hidden" name="productId" id="productId" value="">
+                                                        <input type="hidden" name="prixVente" id="productPrixvente" value="">
+                                                        <input type="hidden" name="code" id="code" value="">
+                                                        <button id="add-product-button" class="btn btn-outline-primary btn-sm">Ajouter un produit</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <form id="AchatForm">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-5 mt-3">
+                                            <label for="">Fournisseur</label>
+                                            <select name="fournisseur" id="fournisseur" class="form-select">
+                                                <option value=""></option>
+                                                {% for fournisseur in fournisseurs %}
+                                                    <option value="{{ fournisseur.id }}">{{ fournisseur.nom }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <label for="">Numéro facture</label>
+                                            <input type="text" name="numFacture" class="form-control" autocomplete="off" required>
+                                        </div>
+                                        <div class="col-3 mt-3">
+                                            <label for="">Date</label>
+                                            <input type="date" name="dateAchat" class="form-control" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-4 mt-5 d-grid gap-2">
+                                            <button class="btn btn-primary btn-lg" id="saveButton">Enregistrer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/prism.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <!-- Inclure jQuery UI Autocomplete -->
+    <script src="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.js')) }}"></script>
+
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            // Configuration de l'autocompletion
+            $('#productLibelle').autocomplete({
+                source: function(request, response){
+                    // Envoi d'une requête AJAX pour récupérer les suggestions de produits
+                    $.ajax({
+                        url: "{{ absolute_url(path('app_api_achat_index')) }}",
+                        dataType: 'json',
+                        data:{
+                            query: request.term
+                        },
+                        success: function (data) {
+                            var suggestions = [];
+                            for (var i = 0; i < data.length; i++) {
+                                suggestions.push({
+                                    label: data[i].libelle,
+                                    prixVente: data[i].prixVente,
+                                    produitId: data[i].produitId,
+                                    code: data[i].code
+                                });
+                            }
+                            response(suggestions)
+                        }
+                    });
+                },
+                minLength:3,
+                select: function (event, ui) {
+                    $(this).val(ui.item.libelle);
+                    console.log(ui.item.prixVente);
+                    $('#productPrixvente').val(ui.item.prixVente);
+                    $('#productPrixventeDisplay').text(ui.item.prixVente);
+                    $('#productId').val(ui.item.produitId);
+                    $('#code').val(ui.item.code);
+                }
+            });
+
+            // Ajout des produits à la liste
+            var produits = [];
+            var totalBenefice = 0;
+            var totalMontant = 0;
+
+            //Fonction pour ajouter un produit
+            function ajouterProduit(produit) {
+
+                //Vérifier si le produit existe dejà dans la liste
+                var produitExistant = produits.find(function (p) {
+                    return p.libelle === produit.libelle
+                });
+
+                if (produitExistant){
+                    alert('Le produit existe déjà dans la liste!');
+                    return;
+                }
+
+                produits.push(produit); // Ajouter un produit au tableau
+
+                // Créer une nouvelle ligne dans la table des produits
+                var newRow = '<tr>' +
+                    '<td>'+ produit.libelle  +'</td>' +
+                    '<td>'+ produit.quantite  +'</td>' +
+                    '<td>'+ produit.montant  +'</td>' +
+                    '<td>'+ produit.benefice  +'</td>' +
+                    '<td><button class="btn btn-danger btn-sm delete-product-button"><i class="ti-trash"></i></button></td>' +
+                    '</tr>';
+
+                $('.productList tbody').append(newRow); // Ajout de la nouvelle ligne à la table
+
+                // Mettre à jour le montant total et le bénéfice total
+                totalMontant += produit.montant;
+                totalBenefice += produit.benefice;
+                console.log(totalMontant)
+
+                // Mettre à jour les totaux dans la table
+                $('.productList tfoot td:eq(1)').text(totalMontant);
+                $('.productList tfoot td:eq(2)').text(totalBenefice);
+            }
+
+            // Gérer l'événement de clic sur le bouton "Supprimer"
+            $(document).on('click', '.delete-product-button', function () {
+                var row = $(this).closest('tr'); // Obtenir la ligne parente du bouton
+                var index = row.index(); // Récupérer l'index de la ligne
+
+                // Supprimer le produit du tableau et de la table
+                var produit = produits.splice(index, 1)[0];
+                row.remove();
+
+                // Mettre à jour les totaux dans la table
+                totalMontant -= produit.montant;
+                totalBenefice -= produit.benefice;
+                $('#totalMontant').text(totalMontant);
+                $('#totalBenefice').text(totalBenefice);
+            });
+
+
+            // Gérer l'événement de clic sur le bouton "Ajouter un produit"
+            $('#add-product-button').click(function (e) {
+                e.preventDefault();
+
+                // Récupérer les valeurs du formulaire de produit
+                var libelle = $('input[name="libelle"]').val();
+                var quantite = parseInt($('input[name="quantite"]').val());
+                var montant = parseInt($('input[name="montant"]').val());
+                var prixVente = parseInt($('input[name="prixVente"]').val());
+                var id = parseInt($('input[name="productId"]').val());
+                var code = $('input[name="code"]').val();
+
+                // Vérifier si les champs ne sont pas vides
+                if (libelle.trim() === '' || isNaN(quantite) || isNaN(montant) || isNaN(prixVente)) {
+                    alert('Veuillez remplir tous les champs du produit.');
+                    return;
+                }
+
+                var venteTotal = prixVente * quantite; // Calcul tu prix d'achat unitaire
+                var benefice = venteTotal - montant;
+
+                // Créer l'objet produit
+                var produit = {
+                    id: id,
+                    libelle: libelle,
+                    quantite: quantite,
+                    montant: montant,
+                    benefice: benefice,
+                    code: code
+                };
+
+                console.log(produit)
+
+                ajouterProduit(produit); // Ajouter le produit à la liste
+
+                // Réinitialiser les champs du formulaire de produit
+                $('input[name="libelle"]').val('');
+                $('input[name="quantite"]').val('');
+                $('input[name="montant"]').val('');
+                $('input[name="prixVente"]').val('');
+                $('input[name="produitId"]').val('');
+                $('input[name="code"]').val('');
+            });
+
+            // Gérer la soumission du formulaire principal
+            $('#AchatForm').submit(function (e) {
+                e.preventDefault();
+                console.log('formulaire soumis')
+
+                // Récupérer les autres valeurs du formulaire
+                var fournisseur = $('select[name="fournisseur"]').val();
+                var numFacture = $('input[name="numFacture"]').val();
+                var dateAchat = $('input[name="dateAchat"]').val();
+
+                // Verifier si les champs ne sont pas vides
+                if (fournisseur.trim() === '' || numFacture.trim() === '' || dateAchat.trim() === ''){
+                    alert("les champs fournisseur, numero facture et date achat ne doivent pas être vide!");
+                    return;
+                }
+
+                // Gerer l'objet achat avec les details du formulaire principal
+                var achat = {
+                    fournisseur: parseInt(fournisseur),
+                    numFacture: numFacture,
+                    dateAchat: dateAchat,
+                    produits: produits,
+                    montant: totalMontant,
+                    benefice: totalBenefice
+                };
+
+                console.log(JSON.stringify(achat))
+
+
+
+                // Envoi de l'objet achat à l'API pour enregistrement
+                $.ajax({
+                    url: "{{ absolute_url(path('app_api_achat_create')) }}",
+                    method: 'POST',
+                    data: JSON.stringify(achat),
+                    contentType: 'application/json',
+                    success: function(response){
+                        // Gérer la réponse de l'enregistrement
+                        var confirmation = confirm("Achat enregistré avec succès! Voulez-vous voir les détails?")
+                        console.log(response);
+
+                        // Réinitialiser les valeurs et la liste des produits
+                        produits = [];
+                        totalMontant = 0;
+                        totalBenefice = 0;
+
+                        // Réinitialiser la table des produits
+                        $('.productList tbody').empty();
+                        $('.productList tfoot td:eq(1)').text(totalMontant);
+                        $('.productList tfoot td:eq(2)').text(totalBenefice);
+
+                        // Réinitialiser les champs du formulaire principal
+                        $('select[name="fournisseur"]').val('');
+                        $('input[name="numFacture"]').val('');
+                        $('input[name="dateAchat"]').val('');
+
+                        // Redirection en fonction de la reponse de l'utilisateur
+                       window.location.replace("{{ absolute_url(path('app_main_achat_index')) }}");
+                    }
+                })
+            });
+        })
+    </script>
+{% endblock %}
