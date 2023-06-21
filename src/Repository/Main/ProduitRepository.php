@@ -74,4 +74,14 @@ class ProduitRepository extends ServiceEntityRepository
             ->setParameter('query', "%{$query}%")
             ->getQuery()->getResult();
     }
+
+    public function findByCodeOrReference(float|bool|int|string|null $query)
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.reference LIKE :query')
+            ->orWhere('p.codebarre LIKE :query')
+            ->setParameter('query', "{$query}")
+            ->getQuery()->getResult()
+            ;
+    }
 }

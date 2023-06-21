@@ -22,3 +22,36 @@
 .totaux.rouge{
     color: darkred;
 }
+
+.montantTotal{
+    font-weight: bold;
+    font-size: 3.5rem;
+    color: darkred;
+}
+.info-client{
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: blue;
+}
+input[name="netAPayer"]{
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+    color: darkred;
+}
+input[name="verse"]{
+    font-weight: bold;
+    font-size: 1.5rem;
+    text-align: center;
+}
+input[name="monnaie"]{
+    font-weight: bold;
+    font-size: 1.7rem;
+    text-align: center;
+    color: blue;
+}
+input[name="client"]{
+    font-weight: bold;
+    text-align: center;
+}

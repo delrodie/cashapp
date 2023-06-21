@@ -4,6 +4,7 @@ namespace App\Entity\Main;
 
 use App\Repository\Main\ProduitRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
@@ -11,33 +12,43 @@ class Produit
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('facture')]
     private ?int $id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $reference = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('facture')]
     private ?string $codebarre = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('facture')]
     private ?string $libelle = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $prixAchat = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $prixVente = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $oldPrixAchat = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $stock = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups('facture')]
     private ?string $slug = null;
 
     #[ORM\ManyToOne(inversedBy: 'produits')]
+    #[Groups('facture')]
     private ?Categorie $categorie = null;
 
     public function getId(): ?int

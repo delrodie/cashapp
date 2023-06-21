@@ -1,0 +1,567 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des factures{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <div class="text-end mb-n5">
+                            <span class="head-icon"><i class="ti-desktop"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-9 text-center">
+                        <span class="montantTotal" id="montantTotal">0</span> FCFA
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+{#                        <div class="card-header">#}
+{#                            <div class="row">#}
+{#                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Formulaire</h5></div>#}
+{#                                <div class="col">#}
+{#                                    <div class="action">#}
+{#                                        <a href="{{ path('app_main_facture_index') }}" class="btn btn-primary">Retour à la liste</a>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                            </div>#}
+
+{#                        </div>#}
+                        <div class="card-body">
+                            <div class="row mt-3">
+                                <div class="col-8 productList">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Liste des produits</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table" id="productTable">
+                                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Codes</th>
+                                                    <th>Produits</th>
+                                                    <th>P.U</th>
+                                                    <th>Qte</th>
+                                                    <th>Montant</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td colspan="4">Totaux</td>
+                                                    <td colspan="3" id="totalMontant" class="totaux rouge text-center">0</td>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Formulaire</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="productForm">
+                                                <div class="row row-cols-1 g-4">
+                                                    <div class="col mt-3">
+                                                        <label for="">Produit</label>
+                                                        <input type="text" name="code" class="form-control" id="productCode" accesskey="A" tabindex="1" autofocus>
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        <label for="">Quanité</label>
+                                                        <input type="number" name="quantite" class="form-control" id="productQuantite" tabindex="0">
+                                                    </div>
+                                                    <span id="productPrixventeDisplay"></span>
+                                                    <div class="col mt-3 d-grid gap-2">
+                                                        <input type="hidden" name="productMontant" id="productMontant" value="">
+                                                        <input type="hidden" name="productId" id="productId" value="">
+                                                        <input type="hidden" name="prixVente" id="productPrixvente" value="">
+                                                        <input type="hidden" name="productStock" id="productStock" value="">
+                                                        <input type="hidden" name="productCode" id="productCode" value="">
+                                                        <input type="hidden" name="productLibelle" id="productLibelle" value="">
+                                                        <button id="add-product-button" class="btn btn-outline-primary btn-sm">Ajouter un produit</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <form id="factureForm">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-4 mt-3">
+                                            <label for="">Client</label>
+                                            <input type="text" name="client" id="numeroClient" class="form-control">
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <label for="">Remise</label>
+                                            <input type="text" name="remise" class="form-control" autocomplete="off">
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <label for="">Net à payer</label>
+                                            <input type="text" name="netAPayer" class="form-control" autocomplete="off" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-8 mt-3">
+                                            <span class="info-client" id="infoClient"></span>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <label for="">Montant versé</label>
+                                            <input type="text" name="verse" id="montantVerse" class="form-control" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-8 mt-3 mb-5">
+                                            <label for="">Monnaie à rendre</label>
+                                            <input type="text" name="monnaie" class="form-control" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-4 mt-5 d-grid gap-2">
+                                            <button class="btn btn-primary btn-lg" id="saveButton">Valider</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/prism.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <!-- Inclure jQuery UI Autocomplete -->
+    <script src="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.js')) }}"></script>
+
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#productQuantite').keydown(function(e) {
+                if (e.keyCode === 9) { // Touche Enter ou Tab
+                    e.preventDefault();
+                    $('#productCode').focus();
+                }
+            });
+
+            // Vérifier s'il existe des données enregistrées en mémoire
+            if (localStorage.getItem("tableData")) {
+                var tableData = JSON.parse(localStorage.getItem("tableData"));
+
+                // Restaurer les données du tableau en utilisant les données enregistrées en mémoire
+                $.each(tableData, function (index, data) {
+                    var newRow =
+                        '<tr>' +
+                        '<td>#</td>' +
+                        '<td>' + data.code + '</td>' +
+                        '<td>' + data.libelle + '</td>' +
+                        '<td>' + data.prixVente + '</td>' +
+                        '<td>' + data.quantite + '</td>' +
+                        '<td class="product-montant">' + data.montant + '</td>' +
+                        '<td><button class="btn btn-sm btn-danger delete-product-button"><i class="ti-trash"></i></button></td>' +
+                        '</tr>';
+
+                    $("#productTable tbody").append(newRow);
+                });
+
+                // Mettre à jour le montant total
+                updateTotalAmount();
+            }
+
+            // Écouteur d'événement pour la saisie du code-barres ou de la référence
+            $('#productCode').on('input', function() {
+                var code = $(this).val(); // Récupérer la valeur saisie
+
+                // Effectuer une requête AJAX pour obtenir les suggestions de produits
+                $.ajax({
+                    url: '{{ path('app_api_facture_list') }}',
+                    method: 'GET',
+                    data: { query: code },
+                    success: function(response) {
+                        // Mettre à jour le champ de formulaire avec les informations du produit
+                        if (response.length > 0) {
+                            var product = response[0];
+                            $('#productId').val(product.produitId);
+                            $('#productLibelle').val(product.libelle);
+                            $('#productPrixvente').val(product.prixVente);
+                            $('#productStock').val(product.stock);
+                            $('#productCode').val(product.reference);
+                            $('#productPrixventeDisplay').text('PV : ' + product.prixVente);
+                            console.log(product)
+
+                            addProduitToTable();
+                        } else {
+                            // Réinitialiser les champs de formulaire si aucun produit trouvé
+                            $('#productId').val('');
+                            $('#productPrixvente').val('');
+                            $('#productStock').val('');
+                            $('#productPrixventeDisplay').text('');
+                        }
+                    }
+                });
+            });
+
+            // Ajouter un produit au tableau
+            $('#add-product-button').on('click', function (e) {
+                e.preventDefault();
+
+                var productCode = $('#productCode').val();
+                var productLibelle = $('#productLibelle').val();
+                var productPrixvente = $('#productPrixvente').val();
+
+                if (productCode.trim() === '' || productLibelle.trim() === '' || productPrixvente.trim() === '') {
+                    alert("Le produit n'a pas été trouvé. Veuillez vérifier le code du produit!");
+                    return;
+                }
+
+                addProduitToTable();
+            })
+
+            // Supprimer un produit du tableau
+            $(document).on('click', '.delete-product-button', function(e) {
+                e.preventDefault();
+
+                var row = $(this).closest('tr');
+                var productMontant = parseInt(row.find('.product-montant').text());
+
+                row.remove();
+
+                // Mettre à jour le montant total
+                var totalMontant = parseInt($('#totalMontant').text());
+                totalMontant -= productMontant;
+                $('#totalMontant').text(totalMontant);
+                $('#montantTotal').text(totalMontant);
+
+                saveTableData()
+            });
+
+            //Traitement du formulaire d'ajout de produit
+            function addProduitToTable() {
+                var productCode = $('#productCode').val();
+                var productQuantite = $("#productQuantite").val();
+                var productPrixVente = $("#productPrixvente").val();
+                var productLibelle = $("#productLibelle").val();
+
+                // if (productCode.trim() === ''){
+                //     alert('Veuillez saisir le code du produit.');
+                //     return;
+                // }
+
+                if (productQuantite.trim() === ''){
+                    productQuantite = 1;
+                }
+
+                // Vérifier si le produit existe déjà dans le tableau
+                var existingRow = $("#productTable tbody tr").filter(function() {
+                    return $(this).find('td:eq(1)').text() === productCode;
+                });
+
+                if (existingRow.length > 0) {
+                    // Le produit existe déjà dans le tableau, mettre à jour la quantité et le montant
+                    var existingQuantite = parseInt(existingRow.find('td:eq(4)').text());
+                    var existingMontant = parseInt(existingRow.find('td:eq(5)').text());
+
+                    var newQuantite = existingQuantite + parseInt(productQuantite);
+                    var newMontant = existingMontant + (parseInt(productQuantite) * parseInt(productPrixVente));
+
+                    existingRow.find('td:eq(4)').text(newQuantite);
+                    existingRow.find('td:eq(5)').text(newMontant);
+                } else {
+                    // Le produit n'existe pas encore dans le tableau, l'ajouter en tant que nouvelle ligne
+                    var productMontant = parseInt(productQuantite) * parseInt(productPrixVente);
+
+                    // Ajouter la nouvelle ligne au tableau avec le bouton de suppression
+                    var newRow = '<tr>' +
+                        '<td>#</td>' +
+                        '<td>' + productCode + '</td>' +
+                        '<td>' + productLibelle + '</td>' +
+                        '<td>' + productPrixVente + '</td>' +
+                        '<td>' + productQuantite + '</td>' +
+                        '<td class="product-montant">' + productMontant + '</td>' +
+                        '<td><button class="btn btn-sm btn-danger delete-product-button"><i class="ti-trash"></i></button></td>' +
+                        '</tr>';
+
+                    $("#productTable tbody").append(newRow);
+                }
+
+                // Calculer le nouveau montant total
+                var totalMontant = 0;
+                $("#productTable tbody tr").each(function() {
+                    var montant = parseInt($(this).find('td:eq(5)').text());
+                    totalMontant += montant;
+                });
+
+                // Créer l'objet produit
+                var produit = {
+                    reference: productCode,
+                    libelle: productLibelle,
+                    prixVente: productPrixVente,
+                    quantite: productQuantite,
+                    montant: productMontant
+                }
+
+                $('#totalMontant').text(totalMontant);
+                $('#montantTotal').text(totalMontant.toLocaleString(undefined, {useGrouping: true}));
+
+                // Réinitialiser les champs du formulaire
+                $('#productCode').val('');
+                $('#productQuantite').val('');
+                $('#productPrixvente').val('');
+                $('#productPrixventeDisplay').val('');
+
+                saveTableData();
+            }
+
+            function saveTableData() {
+                var tableData = []; // Tableau pour stocker les données
+
+                // Parcourir les lignes du tableau et récupérer les informations nécessaires
+                $("#productTable tbody tr").each(function () {
+                    var code = $(this).find("td:eq(1)").text();
+                    var libelle = $(this).find("td:eq(2)").text();
+                    var prixVente = $(this).find("td:eq(3)").text();
+                    var quantite = $(this).find("td:eq(4)").text();
+                    var montant = $(this).find("td:eq(5)").text();
+
+                    // Ajouter les données au tableau
+                    tableData.push({
+                        code: code,
+                        libelle: libelle,
+                        prixVente: prixVente,
+                        quantite: quantite,
+                        montant: montant,
+                    });
+                });
+
+                // Enregistrer les données en mémoire (LocalStorage)
+                localStorage.setItem("tableData", JSON.stringify(tableData));
+                console.log(tableData)
+            }
+
+            // Fonction pour mettre à jour le montant total
+            function updateTotalAmount() {
+                var totalMontant = 0;
+                $("#productTable tbody tr").each(function () {
+                    var montant = parseInt($(this).find("td:eq(5)").text());
+                    totalMontant += montant;
+                });
+
+                $("#totalMontant").text(totalMontant);
+                $("#montantTotal").text(totalMontant.toLocaleString(undefined, { useGrouping: true }));
+            }
+
+            // Recherche du client par la saisie du numéro de telephone
+            $('#numeroClient').on('input',function () {
+                var numeroClient = $(this).val();
+
+                if (numeroClient.length === 10){
+                    console.log(numeroClient)
+                    $.ajax({
+                        url: "{{ absolute_url(path('app_api_client_show')) }}",
+                        method: 'GET',
+                        data: {numero: numeroClient},
+                        success: function (response) {
+                            console.log(response.length)
+                            var message = "Un nouveau client";
+                            if (response.length > 0){
+                                var nombre = response[0].nombre;
+                                var plus = response[0].plus;
+
+                                if (nombre > 1) message = nombre + " achats, dont ";
+                                else message = nombre + " achat, dont ";
+
+                                if (plus === 0) message += " aucun de plus de 10.000 FCFA";
+                                else message += plus + " de plus de 10.000 FCFA"
+
+                            }
+
+                            $("#infoClient").text(message)
+                            $('input[name="remise"]').val(0)
+                            $('input[name="netAPayer"]').val($('#totalMontant').text())
+
+                            remise()
+                            monnaie()
+                        }
+                    });
+                }
+            });
+
+            // Calcul de la monnaie
+            function monnaie() {
+
+
+                $('#montantVerse').on('input', function () {
+                    var montantVerse = $(this).val();
+                    var remise = $('input[name="remise"]').val();
+                    var totalAchat = $('#totalMontant').text();
+                    console.log(remise)
+
+                    if (remise > 0){
+                        var pourcentage = parseInt(remise)/100;
+                        var netApayer = Math.ceil((totalAchat * (1 - pourcentage)) / 25) * 25;
+                        console.log(netApayer)
+                    }else{
+                        var netApayer = parseInt($('input[name="netAPayer"]').val());
+                    }
+
+                    var monnaie = parseInt(montantVerse) - netApayer;
+
+                    $('input[name="monnaie"]').val(monnaie);
+
+
+                })
+            }
+
+            // Calcul de la remise
+            function remise() {
+                var totalAchat = $('#totalMontant').text();
+
+                $('input[name="remise"]').on('input', function () {
+                    var remise = $(this).val();
+                    if (remise.trim() ==='') {
+                        $('input[name="remise"]').val(0);
+                        var remise = 0;
+                    }
+                    var pourcentage = parseInt(remise)/100;
+                    var remise = Math.ceil((totalAchat * (1 - pourcentage)) / 25) * 25;
+
+                    $('input[name="netAPayer"]').val(remise)
+
+                   // Mise à jour de la monnaie
+                    var verse = $('#montantVerse').val()
+                    if (verse.trim() === '') {
+                        $('#montantVerse').val(0);
+                        verse = 0;
+                    }
+                    var monnaie = parseInt(verse) - remise;
+                    $('input[name="monnaie"]').val(monnaie);
+                })
+            }
+
+            // Gerer la soumission du formulaire principal
+            $('#factureForm').submit(function (e) {
+                e.preventDefault();
+
+                // Recuperer les autres valeurs du formulaire
+                var client = $('input[name="client"]').val();
+                var remise = $('input[name="remise"]').val();
+                var nap = $('input[name="netAPayer"]').val();
+                var verse = $('input[name="verse"]').val();
+                var monnaie = $('input[name="monnaie"]').val();
+
+                // Verifions si les champs ne sont pas vides
+                if (client.trim() ==='' || verse.trim()===''){
+                    var saveButton = document.getElementById("saveButton");
+                    saveButton.classList.remove("button-processing");
+                    saveButton.innerHTML = "Valider";
+                    alert("Le numéro du client et le montant versé ne doivent pas être vide")
+                    return;
+                }
+
+                // Recuperer la liste des produits du tableau
+                var productRows = $('#productTable tbody tr');
+                var produits = [];
+
+                // Loop through each product row and extract the relevant data
+                productRows.each(function(index) {
+                    var row = $(this);
+                    var code = row.find('td:eq(1)').text();
+                    var libelle = row.find('td:eq(2)').text();
+                    var prixVente = row.find('td:eq(3)').text();
+                    var quantite = row.find('td:eq(4)').text();
+                    var montant = row.find('td:eq(5)').text();
+
+                    // Create an object for each product
+                    var produit = {
+                        code: parseInt(code),
+                        libelle: libelle,
+                        prixVente: parseInt(prixVente),
+                        quantite: parseInt(quantite),
+                        montant: parseInt(montant)
+                    };
+
+                    // Add the product object to the produits array
+                    produits.push(produit);
+                });
+                // Gerer l'objet facture avec les details
+                var facture = {
+                    client: client,
+                    remise: parseInt(remise),
+                    nap: parseInt(nap),
+                    verse: parseInt(verse),
+                    monnaie: parseInt(monnaie),
+                    produits: produits
+                }
+                console.log(JSON.stringify(facture))
+
+                // Envoi de l'objet facture à l'API pour enregistrement
+                $.ajax({
+                    url: "{{ absolute_url(path('app_api_facture_create')) }}",
+                    method: 'POST',
+                    data: JSON.stringify(facture),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        if (response){
+                            // Rediriger vers l'url de l'edition de la facture avec l'id de la facture
+                            var factureId = response;
+                            var url = "{{ absolute_url(path('app_main_facture_print')) }}" + "?client=" + factureId;
+
+                            // Réinitialiser les champs du formulaire
+                            $('#productCode').val('');
+                            $('#productQuantite').val('');
+                            $('#productPrixvente').val('');
+                            $('#productPrixventeDisplay').val('');
+                            $('#numeroClient').val('');
+                            $('input[name="remise"]').val('');
+                            $('input[name="netAPayer"]').val('');
+                            $('#montantVerse').val('');
+                            $('input[name="monnaie"]').val('');
+
+                            // Vider le tableau de produits
+                            $("#productTable tbody").empty();
+                            $('#totalMontant').text('0');
+                            $('#montantTotal').text('0');
+
+                            // Supprimer les données enregistrées en mémoire
+                            localStorage.removeItem('tableData');
+
+                            window.open(url, '_blank');
+
+                            location.reload()
+                        }
+                    }
+                })
+
+            });
+
+        });
+    </script>
+
+
+{% endblock %}

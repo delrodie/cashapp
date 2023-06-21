@@ -4,7 +4,9 @@ namespace App\Service;
 
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CategorieRepository;
+use App\Repository\Main\ClientRepository;
 use App\Repository\Main\DomaineRepository;
+use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
@@ -14,7 +16,8 @@ class Utilities
     public function __construct(
         private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
         private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
-        private AchatRepository $achatRepository
+        private AchatRepository $achatRepository, private ClientRepository $clientRepository,
+        private FactureRepository $factureRepository
     )
     {
     }
@@ -81,6 +84,22 @@ class Utilities
         if (!$lastAchat) return 1001;
 
         return $lastAchat->getId() + 1001;
+    }
+
+    public function codeClient()
+    {
+        $lastClient = $this->clientRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastClient) return 1001;
+
+        return $lastClient->getId() + 1001;
+    }
+
+    public function codeFacture()
+    {
+        $lastFacture = $this->factureRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastFacture) return 100001;
+
+        return $lastFacture->getId() + 100001;
     }
 
     /**
