@@ -1,0 +1,35 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        {{ form_start(form) }}
+        <div class="modal-header modal-colored-header bg-primary" >
+            <h4 class="modal-title" id="primary-header-modalLabel text-white" > Formulaire</h4>
+            <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+            ></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12 mt-3">{{ form_row(form.code) }}</div>
+                <div class="col-12 mt-3">{{ form_row(form.contact) }}</div>
+                <div class="col-12 mt-3">{{ form_row(form.identite) }}</div>
+            </div>
+            {{ form_widget(form) }}
+        </div>
+        <div class="modal-footer">
+            <a href="{{ path('app_main_client_index') }}" class="btn btn-light">
+                Annuler
+            </a>
+            <button type="submit" class="btn btn-light-primary text-primary font-medium" id="saveButton" >
+                {{ button_label|default('Enregistrer') }}
+            </button>
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+</div>
+
+

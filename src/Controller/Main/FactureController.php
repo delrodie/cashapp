@@ -2,6 +2,7 @@
 
 namespace App\Controller\Main;
 
+use App\Entity\Main\Facture;
 use App\Repository\Main\FactureRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +34,14 @@ class FactureController extends AbstractController
         }
 
         return $this->render('main/facture/print.html.twig',[
+            'facture' => $facture
+        ]);
+    }
+
+    #[Route('/{id}/details', name: 'app_main_facture_details', methods: ['GET'])]
+    public function details(Facture $facture)
+    {
+        return $this->render('main/facture/details.html.twig',[
             'facture' => $facture
         ]);
     }
