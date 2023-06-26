@@ -1,0 +1,46 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        {{ form_start(form) }}
+        <div class="modal-header modal-colored-header bg-primary text-white" >
+            <h4 class="modal-title text-white" id="primary-header-modalLabel" > Formulaire</h4>
+            <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+            ></button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-12 mt-3">{{ form_row(form.username) }}</div>
+                <div class="col-12 mt-3">{{ form_row(form.password) }}</div>
+                <div class="col-12 mt-3">
+                    {% for role in form.roles %}
+                        <div class="form-check">
+                            {{ form_widget(role,{"attr":{"class":"form-check-input"}}) }}
+                            {{ form_label(role) }}
+                        </div>
+                    {% endfor %}
+                    {{ form_widget(form) }}
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <a href="{{ path('app_main_user_index') }}" class="btn btn-light">
+                Annuler
+            </a>
+            <button type="submit" class="btn btn-light-primary text-primary font-medium" id="saveButton" >
+                {{ button_label|default('Enregistrer') }}
+            </button>
+
+            {{ form_end(form) }}
+            {% if suppression == true %}
+                {{ include('main/user/_delete_form.html.twig') }}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+

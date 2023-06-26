@@ -9,6 +9,7 @@ use App\Repository\Main\DomaineRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
+use App\Repository\Main\UserRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class Utilities
@@ -17,7 +18,7 @@ class Utilities
         private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
         private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
         private AchatRepository $achatRepository, private ClientRepository $clientRepository,
-        private FactureRepository $factureRepository
+        private FactureRepository $factureRepository, private UserRepository $userRepository
     )
     {
     }
@@ -100,6 +101,38 @@ class Utilities
         if (!$lastFacture) return 100001;
 
         return $lastFacture->getId() + 100001;
+    }
+
+    public function getUsers(string $username): array
+    {
+        $getUsers = $this->userRepository->findWithout($username);
+        $users = [];
+        foreach ($getUsers as $getUser){
+            $roles = $getUser->getRoles()[0] ?? $getUser->getRoles();
+            switch ($roles) {
+                case 'ROLE_ADMIN' :
+                    $role = 'Administrateur';
+                    break;
+                case 'ROLE_GERANT':
+                    $role = 'Gérant';
+                    break;
+                case 'ROLE_CAISSE':
+                    $role = 'Caisse';
+                    break;
+                default:
+                    $role = 'Utilisateur';
+                    break;
+            }
+            $users[] = [
+                'id' => $getUser->getId(),
+                'userIdentifier' => $getUser->getUserIdentifier(),
+                'role' => $role,
+                'connexion' => $getUser->getConnexion(),
+                'lastConnectedAt' => $getUser->getLastConnectedAt()
+            ];
+        };
+
+        return $users;
     }
 
     /**

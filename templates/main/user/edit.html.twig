@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} Gestion liste des domaines{% endblock %}
+{% block title %}{{ parent() }} Gestion liste des users{% endblock %}
 
 {% block body %}
 
@@ -9,12 +9,12 @@
             <div class="card-body px-4 py-3">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <h4 class="fw-semibold mb-8">Gestion des domaines</h4>
+                        <h4 class="fw-semibold mb-8">Gestion des users</h4>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Produits</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Domaines</li>
+                                <li class="breadcrumb-item" aria-current="page">users</li>
                             </ol>
                         </nav>
                     </div>
@@ -48,28 +48,30 @@
                                     <thead>
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
-                                        <th class="text-center text-uppercase">Code</th>
-                                        <th class="text-center text-uppercase">Libelle</th>
-                                        <th class="text-center text-uppercase">Catégories</th>
+                                        <th class="text-center text-uppercase">NOM UTILISATEURS</th>
+                                        <th class="text-center text-uppercase">ROLES</th>
+                                        <th class="text-center text-uppercase">CONNEXION</th>
+                                        <th class="text-center text-uppercase">DATE</th>
                                         <th class="text-center text-uppercase">actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for domaine in domaines %}
+                                    {% for user in users %}
                                         <tr>
                                             <td>{{ loop.index }}</td>
-                                            <td class="text-center">{{ domaine.code }}</td>
-                                            <td>{{ domaine.libelle }}</td>
-                                            <td class="text-center">{{ domaine.categories|length }}</td>
+                                            <td class="text-left">{{ user.userIdentifier }}</td>
+                                            <td>{{ user.role }}</td>
+                                            <td class="text-center">{{ user.connexion }}</td>
+                                            <td class="text-center">{{ user.lastConnectedAt ? user.lastConnectedAt|date('Y-m-d H:i:s') : '' }}</td>
                                             <td class="text-center">
-                                                <a href="{{ path('app_main_domaine_show', {'id': domaine.id}) }}"><i class="ti-receipt"></i></a>
+                                                <a href="{{ path('app_main_user_show', {'id': user.id}) }}"><i class="ti-receipt"></i></a>
                                                 &nbsp; | &nbsp;
-                                                <a href="{{ path('app_main_domaine_edit', {'id': domaine.id}) }}"><i class="ti-pencil-alt"></i></a>
+                                                <a href="{{ path('app_main_user_edit', {'id': user.id}) }}"><i class="ti-pencil-alt"></i></a>
                                             </td>
                                         </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="5">Aucun domaine trouvé</td>
+                                            <td colspan="6">Aucun utilisateur trouvé</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -83,7 +85,7 @@
         </section>
 
         <div id="primary-header-modal" class="modal fade" tabindex="-1" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
-            {{ include('main/domaine/_form.html.twig') }}
+            {{ include('main/user/_form.html.twig',{'button_label': 'Modifier'}) }}
         </div>
 
     </div>
@@ -93,7 +95,6 @@
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
-    <link rel="stylesheet" href="pris">
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -106,5 +107,11 @@
                 'copy', 'excel', 'pdf'
             ]
         } );
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var modal = new bootstrap.Modal(document.getElementById("primary-header-modal"));
+            modal.show();
+        });
     </script>
 {% endblock %}
