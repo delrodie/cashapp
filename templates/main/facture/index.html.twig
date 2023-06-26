@@ -103,7 +103,7 @@
                                     <div class="row">
                                         <div class="col-4 mt-3">
                                             <label for="">Client</label>
-                                            <input type="text" name="client" id="numeroClient" class="form-control">
+                                            <input type="text" name="client" id="numeroClient" class="form-control" autocomplete="off">
                                         </div>
                                         <div class="col-4 mt-3">
                                             <label for="">Remise</label>
@@ -267,6 +267,7 @@
                 var productQuantite = $("#productQuantite").val();
                 var productPrixVente = $("#productPrixvente").val();
                 var productLibelle = $("#productLibelle").val();
+                var productStock = $("#productStock").val();
 
                 // if (productCode.trim() === ''){
                 //     alert('Veuillez saisir le code du produit.');
@@ -275,6 +276,12 @@
 
                 if (productQuantite.trim() === ''){
                     productQuantite = 1;
+                }
+
+                if (parseInt(productQuantite) > parseInt(productStock)) {
+                    alert("La quantité demandée est supérieure au stock disponible. Merci de faire de faire des achats");
+                    $("#productCode").val("");
+                    return;
                 }
 
                 // Vérifier si le produit existe déjà dans le tableau
