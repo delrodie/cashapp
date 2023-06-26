@@ -1,0 +1,31 @@
+{% extends 'security_layout.html.twig' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+    <p>
+    {% if error %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endif %}
+    </p>
+    <form action="{{ absolute_url(path('app_login')) }}" method="post">
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Nom utilisateur</label>
+            <input type="text" id="username" name="_username" value="{{ last_username }}" class="form-control" placeholder="Email" autocomplete="off">
+        </div>
+        <div class="mb-4">
+            <label for="exampleInputPassword1" class="form-label">Mot de passe</label>
+            <input type="password" id="password" name="_password" class="form-control" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            <button class="btn btn-primary w-100 py-8 mb-4 rounded-2">Se connecter</button>
+        </div>
+
+    </form>
+{% endblock %}

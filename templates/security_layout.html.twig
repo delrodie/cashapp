@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="handheldfriendly" content="true" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="description" content="Mordenize" />
+    <meta name="author" content="" />
+    <meta name="keywords" content="Mordenize" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{% block title %}CashApp :: {% endblock %}</title>
+    <title>Mordenize</title>
+    <!--  Required Meta Tag -->
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/style.min.css')) }}">
+        <link rel="stylesheet" href="{{ absolute_url(asset('assets/css/app.css')) }}">
+        <link rel="stylesheet" href="{{ asset('assets/vendor/themify-icons/themify-icons.css') }}">
+    {% endblock %}
+    <style>
+        .head-icon{
+            font-size: 5.5rem;
+        }
+        .action{
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
+    <div class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="d-flex align-items-center justify-content-center w-100">
+            <div class="row justify-content-center w-100">
+                <div class="col-md-8 col-lg-6 col-xxl-3">
+                    <div class="card mb-0">
+                        <div class="card-body">
+                            <a href="{{ absolute_url(path('app_home')) }}" class="text-nowrap logo-img text-center d-block mb-5 w-100">
+                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/dark-logo.svg" width="180" alt="">
+                            </a>
+                            <div class="position-relative text-center my-4">
+                                <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">Securité</p>
+                                <span class="border-top w-100 position-absolute top-50 start-50 translate-middle"></span>
+                            </div>
+                            {% block body %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+    <script src="{{ absolute_url(asset('assets/vendor/js/jquery.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/simplebar.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/bootstrap.bundle.min.js')) }}"></script>
+    <!--  core files -->
+    <script src="{{ absolute_url(asset('assets/vendor/js/app.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/app.init.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/app-style-switcher.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/sidebarmenu.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/custom.js')) }}"></script>
+{% endblock %}
+</body>
+</html>
