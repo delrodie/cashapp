@@ -52,6 +52,9 @@ class Facture
     #[Groups('facture')]
     private ?\DateTimeInterface $createdAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'factures')]
+    private ?User $caisse = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -161,6 +164,18 @@ class Facture
     public function setCreatedAt(?\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getCaisse(): ?User
+    {
+        return $this->caisse;
+    }
+
+    public function setCaisse(?User $caisse): static
+    {
+        $this->caisse = $caisse;
 
         return $this;
     }

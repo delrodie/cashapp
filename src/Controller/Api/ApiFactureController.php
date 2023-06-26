@@ -68,6 +68,7 @@ class ApiFactureController extends AbstractController
         $facture->setProduits($data['produits']);
         $facture->setCreatedAt(new \DateTime());
         $facture->setClient($client);
+        $facture->setCaisse($this->getUser());
 
         $produits = $data['produits'];
         foreach ($produits as $produit){
@@ -101,4 +102,5 @@ class ApiFactureController extends AbstractController
 
         return $client;
     }
+
 }

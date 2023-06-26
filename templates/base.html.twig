@@ -43,26 +43,29 @@
             </div>
             <nav class="sidebar-nav scroll-sidebar" data-simplebar>
                 <ul id="sidebarnav">
-                    <li class="nav-small-cap">
-                        <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-                        <span class="hide-menu">Tableau de bord</span>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="{{ absolute_url(path('app_home')) }}" aria-expanded="false">
+                    {% if is_granted('ROLE_GERANT') %}
+                        <li class="nav-small-cap">
+                            <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+                            <span class="hide-menu">Tableau de bord</span>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ absolute_url(path('app_home')) }}" aria-expanded="false">
                               <span>
                                 <i class="ti-dashboard"></i>
                               </span>
-                            <span class="hide-menu">General</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="#" aria-expanded="false">
+                                <span class="hide-menu">General</span>
+                            </a>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="#" aria-expanded="false">
                               <span>
                                 <i class="ti-stats-up"></i>
                               </span>
-                            <span class="hide-menu">Statistiques</span>
-                        </a>
-                    </li>
+                                <span class="hide-menu">Statistiques</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
                     <!-- CAISSE -->
                     <li class="nav-small-cap">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -102,92 +105,94 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                    {% if is_granted('ROLE_GERANT') %}
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
                               <span class="d-flex">
                                 <i class="ti-package"></i>
                               </span>
-                            <span class="hide-menu">Produits</span>
-                        </a>
-                        <ul aria-expanded="false" class="collapse first-level">
-                            <li class="sidebar-item">
-                                <a href="{{ absolute_url(path('app_main_produit_index')) }}" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Articles</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="{{ absolute_url(path('app_main_categorie_index')) }}" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Categories</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="{{ absolute_url(path('app_main_domaine_index')) }}" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Domaines</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                                <span class="hide-menu">Produits</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a href="{{ absolute_url(path('app_main_produit_index')) }}" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Articles</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="{{ absolute_url(path('app_main_categorie_index')) }}" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Categories</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="{{ absolute_url(path('app_main_domaine_index')) }}" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Domaines</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
                               <span class="d-flex">
                                 <i class="ti-truck"></i>
                               </span>
-                            <span class="hide-menu">Approvisionnement</span>
-                        </a>
-                        <ul aria-expanded="false" class="collapse first-level">
-                            <li class="sidebar-item">
-                                <a href="{{ absolute_url(path('app_main_fournisseur_index')) }}" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Fournisseurs</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="{{ absolute_url(path('app_main_achat_index')) }}" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Achats</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                                <span class="hide-menu">Approvisionnement</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a href="{{ absolute_url(path('app_main_fournisseur_index')) }}" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Fournisseurs</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="{{ absolute_url(path('app_main_achat_index')) }}" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Achats</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
                               <span class="d-flex">
                                 <i class="ti-server"></i>
                               </span>
-                            <span class="hide-menu">Stock</span>
-                        </a>
-                        <ul aria-expanded="false" class="collapse first-level">
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Inventaire</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Destockage</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                                <span class="hide-menu">Stock</span>
+                            </a>
+                            <ul aria-expanded="false" class="collapse first-level">
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Inventaire</span>
+                                    </a>
+                                </li>
+                                <li class="sidebar-item">
+                                    <a href="#" class="sidebar-link">
+                                        <div class="round-16 d-flex align-items-center justify-content-center">
+                                            <i class="ti-angle-right"></i>
+                                        </div>
+                                        <span class="hide-menu">Destockage</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
                     <!-- ETATS -->
                     <li class="nav-small-cap">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -228,7 +233,7 @@
                         </a>
                         <ul aria-expanded="false" class="collapse first-level">
                             <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
+                                <a href="{{ absolute_url(path('app_etat_facture_global')) }}" class="sidebar-link">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti-angle-right"></i>
                                     </div>
@@ -236,27 +241,11 @@
                                 </a>
                             </li>
                             <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
+                                <a href="{{ absolute_url(path('app_etat_facture_caisse')) }}" class="sidebar-link">
                                     <div class="round-16 d-flex align-items-center justify-content-center">
                                         <i class="ti-angle-right"></i>
                                     </div>
                                     <span class="hide-menu">Par caisse</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Clients</span>
-                                </a>
-                            </li>
-                            <li class="sidebar-item">
-                                <a href="#" class="sidebar-link">
-                                    <div class="round-16 d-flex align-items-center justify-content-center">
-                                        <i class="ti-angle-right"></i>
-                                    </div>
-                                    <span class="hide-menu">Articles</span>
                                 </a>
                             </li>
                         </ul>
@@ -352,6 +341,7 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                 </ul>
             </nav>
             <div class="fixed-profile p-3 bg-light-secondary rounded sidebar-ad mt-3">

@@ -3,6 +3,8 @@
 namespace App\Entity\Main;
 
 use App\Repository\Main\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -33,6 +35,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastConnectedAt = null;
+
+    #[ORM\OneToMany(mappedBy: 'caisse', targetEntity: Facture::class)]
+    private Collection $factures;
+
+    public function __construct()
+    {
+        $this->factures = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -124,6 +134,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastConnectedAt(?\DateTimeInterface $lastConnectedAt): static
     {
         $this->lastConnectedAt = $lastConnectedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Facture>
+     */
+    public function getFactures(): Collection
+    {
+        return $this->factures;
+    }
+
+    public function addFacture(Facture $facture): static
+    {
+        if (!$this->factures->contains($facture)) {
+            $this->factures->add($facture);
+            $facture->setCaisse($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFacture(Facture $facture): static
+    {
+        if ($this->factures->removeElement($facture)) {
+            // set the owning side to null (unless already changed)
+            if ($facture->getCaisse() === $this) {
+                $facture->setCaisse(null);
+            }
+        }
 
         return $this;
     }

@@ -39,6 +39,44 @@ class FactureRepository extends ServiceEntityRepository
         }
     }
 
+    public function findAllList()
+    {
+        return $this->createQueryBuilder('f')
+            ->addSelect('ca')
+            ->addSelect('cl')
+            ->leftJoin('f.caisse', 'ca')
+            ->leftJoin('f.client', 'cl')
+            ->getQuery()->getResult()
+            ;
+    }
+
+    public function getTotalNAP()
+    {
+        return $this->createQueryBuilder('f')
+            ->select('SUM(f.nap)')
+            ->getQuery()->getSingleScalarResult()
+            ;
+    }
+
+    public function findByCaisseAndPeriode(int $id, string $debut=null, string $fin=null)
+    {
+        $query =  $this->createQueryBuilder('f')
+            ->addSelect('c')
+            ->leftJoin('f.caisse', 'c')
+            ->where('c.id = :id');
+            if($debut AND $fin){
+                $query->andWhere('f.createdAt BETWEEN :debut AND :fin')
+                ->setParameters([
+                    'id' => $id,
+                    'debut' => "{$debut} 00:00:00",
+                    'fin' => "{$fin} 23:59:59"
+                ]);
+            }else{
+                $query->setParameter('id', $id);
+            }
+           return  $query->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Facture[] Returns an array of Facture objects
 //     */
