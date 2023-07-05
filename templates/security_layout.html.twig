@@ -10,7 +10,7 @@
     <meta name="keywords" content="Mordenize" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{% block title %}CashApp :: {% endblock %}</title>
-    <title>Mordenize</title>
+    <link rel="icon" href="{{ absolute_url(asset('assets/img/favicon.ico')) }}">
     <!--  Required Meta Tag -->
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/style.min.css')) }}">
@@ -24,6 +24,10 @@
         .action{
             float: right;
         }
+        .logo-img{
+            font-weight: bold;
+            font-size: 2.3rem;
+        }
     </style>
 </head>
 <body>
@@ -36,7 +40,7 @@
                     <div class="card mb-0">
                         <div class="card-body">
                             <a href="{{ absolute_url(path('app_home')) }}" class="text-nowrap logo-img text-center d-block mb-5 w-100">
-                                <img src="https://demos.adminmart.com/premium/bootstrap/modernize-bootstrap/package/dist/images/logos/dark-logo.svg" width="180" alt="">
+                                <img src="{{ absolute_url(asset('assets/img/logo_02.png')) }}" width="250" alt="">
                             </a>
                             <div class="position-relative text-center my-4">
                                 <p class="mb-0 fs-4 px-3 d-inline-block bg-white text-dark z-index-5 position-relative">Securité</p>

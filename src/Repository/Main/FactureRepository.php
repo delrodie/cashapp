@@ -77,6 +77,67 @@ class FactureRepository extends ServiceEntityRepository
            return  $query->getQuery()->getResult();
     }
 
+    public function getVenteByCaisse(int $caisse, string $debut = null, string $fin = null)
+    {
+        $query = $this->createQueryBuilder('f')
+            ->select('SUM(f.nap)')
+            ->where('f.caisse = :id')
+            ->setParameter('id', $caisse)
+            ->groupBy('f.caisse');
+
+        if ($debut && $fin) {
+            $query->andWhere('f.createdAt BETWEEN :debut AND :fin')
+                ->setParameter('debut', "{$debut} 00:00:00")
+                ->setParameter('fin', "{$fin} 23:59:59");
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getListDesc(int $limit=null)
+    {
+        $query =  $this->createQueryBuilder('f')
+            ->addSelect('ca')
+            ->addSelect('cl')
+            ->leftJoin('f.caisse', 'ca')
+            ->leftJoin('f.client', 'cl')
+            ->orderBy('f.id', "DESC");
+            if ($limit) {
+                $query->setMaxResults($limit);
+            }
+            return $query->getQuery()->getResult();
+    }
+
+    public function getTopClient($client, array $periode=null)
+    {
+        $query = $this->createQueryBuilder('f')
+            ->addSelect('c')
+            ->leftJoin('f.client', 'c')
+            ->where('c.id = :id')
+            ->setParameter('id', $client);
+        if ($periode){
+            $query->andWhere('f.createdAt BETWEEN :debut AND :fin')
+                ->setParameters([
+                    'debut' => $periode['debut'],
+                    'fin' => $periode['fin']
+                ]);
+        }
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getVenteByPeriode(string $debut, string $fin)
+    {
+        return $this->createQueryBuilder('f')
+//            ->select('SUM(f.nap)')
+            ->where('f.createdAt BETWEEN :debut AND :fin')
+            ->setParameters([
+                'debut' => $debut,
+                'fin' => $fin
+            ])
+            ->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Facture[] Returns an array of Facture objects
 //     */
