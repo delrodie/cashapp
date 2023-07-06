@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'app:import-db',
-    description: 'Add a short description for your command',
+    description: 'Importation de la base de données archives',
 )]
 class ImportDatabaseCommand extends Command
 {
@@ -68,7 +68,8 @@ class ImportDatabaseCommand extends Command
 
         // Importation de la base de données
         $importCommand = sprintf(
-            'mysql -u %s -p%s %s < public/.sql/cashapp_archive.sql',
+            'mysql -h %s -u %s -p%s %s < public/.sql/cashapp_archive.sql',
+            $this->parseDatabaseHost($archiveDatabaseUrl),
             $this->parseDatabaseUser($archiveDatabaseUrl),
             $this->parseDatabasePassword($archiveDatabaseUrl),
             $databaseName
@@ -133,6 +134,14 @@ class ImportDatabaseCommand extends Command
     {
         preg_match('/mysql:\/\/[^:]+:([^@]+)/', $archiveDatabaseUrl, $matches);
         return $matches[1];
+    }
+
+    private function parseDatabaseHost(\UnitEnum|float|array|bool|int|string|null $archiveDatabaseUrl): string
+    {
+//        preg_match('/\/\/([^:]+)/', $archiveDatabaseUrl, $matches);
+//         dd($matches[1]);
+        $parseUrl = parse_url($archiveDatabaseUrl);
+        return $parseUrl['host'];
     }
 
 }
