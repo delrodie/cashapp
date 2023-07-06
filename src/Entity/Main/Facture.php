@@ -7,8 +7,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
+
 #[ORM\Entity(repositoryClass: FactureRepository::class)]
-class Facture
+class Facture implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -53,7 +54,12 @@ class Facture
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'factures')]
+    #[Groups('facture')]
     private ?User $caisse = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
+    private ?bool $sync = null;
 
     public function getId(): ?int
     {
@@ -178,5 +184,35 @@ class Facture
         $this->caisse = $caisse;
 
         return $this;
+    }
+
+    public function isSync(): ?bool
+    {
+        return $this->sync;
+    }
+
+    public function setSync(?bool $sync): static
+    {
+        $this->sync = $sync;
+
+        return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'montant' => $this->montant,
+            'remise' => $this->remise,
+            'nap' => $this->nap,
+            'verse' => $this->verse,
+            'monnaie' => $this->monnaie,
+            'produits' => $this->produits,
+            'client' => $this->client?->jsonSerialize(),
+            'createdAt' => $this->createdAt,
+            'caisse' => $this->caisse ? $this->caisse->jsonSerialize() : null,
+            'sync' => $this->sync,
+        ];
     }
 }

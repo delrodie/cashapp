@@ -108,4 +108,15 @@ class Client
 
         return $this;
     }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'contact' => $this->contact,
+            'identite' => $this->identite,
+            'factures' => $this->factures
+        ];
+    }
 }

@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
@@ -16,27 +17,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('facture')]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups('facture')]
     private ?string $username = null;
 
     #[ORM\Column]
+    #[Groups('facture')]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups('facture')]
     private ?string $password = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('facture')]
     private ?int $connexion = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups('facture')]
     private ?\DateTimeInterface $lastConnectedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'caisse', targetEntity: Facture::class)]
+    #[Groups('facture')]
     private Collection $factures;
 
     public function __construct()
@@ -166,5 +174,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'username' => $this->username,
+            'roles' => $this->roles,
+            'password' => $this->password,
+            'connexion' => $this->connexion,
+            'lastConnectedAt' => $this->lastConnectedAt
+        ];
     }
 }

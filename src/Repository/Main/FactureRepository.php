@@ -138,6 +138,17 @@ class FactureRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    public function getFactureNoSync()
+    {
+        return $this->createQueryBuilder('f')
+            ->addSelect('cl')
+            ->addSelect('ca')
+            ->leftJoin('f.client', 'cl')
+            ->leftJoin('f.caisse', 'ca')
+            ->where('f.sync IS NULL')
+            ->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Facture[] Returns an array of Facture objects
 //     */
