@@ -5,7 +5,7 @@
     <tr>
         <td>
             <div class="mb-5" style="font-size: 0.7em; font-family: Consolas; text-align: center">
-                <a href="{{ absolute_url(path('app_main_facture_index')) }}" accesskey="0"><strong>Boutok AmerikCanada</strong></a><br>
+                <a href="" onclick="window.close()" accesskey="0"><strong>Boutok AmerikCanada</strong></a><br>
                 Faya Nouveau goudron <br>
                 Tel: +225 0759136978 / 0747742221
             </div>
@@ -18,7 +18,7 @@
         <td style="text-align: right">Date: <strong>{{ facture.createdAt|date('d/m/Y') }}</strong></td>
     </tr>
     <tr>
-        <td class="">Caisse: <strong></strong></td>
+        <td class="">Caisse: <strong>{{ facture.caisse.userIdentifier }}</strong></td>
         <td style="text-align: right">Heure: <strong>{{ facture.createdAt|date('H:i:s') }}</strong></td>
     </tr>
 </table>

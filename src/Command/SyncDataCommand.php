@@ -58,7 +58,7 @@ class SyncDataCommand extends Command
                         'achats' => $achats
                     ]
                 ]);
-                dd($response);
+//                dd($response);
                 if ($response->getStatusCode() === 200) {
                     if ($response->getContent()) {//dd('ici');
                         // Mise à jour des factures locales
