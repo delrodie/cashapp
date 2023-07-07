@@ -41,8 +41,7 @@ class ImportDatabaseCommand extends Command
                 'skip-existing',
                 null,
                 InputOption::VALUE_NONE,
-                'Ignorer les tables existantes lors de l\'importation',
-                'dev'
+                'Ignorer les tables existantes lors de l\'importation'
             )
             ->setDescription("Importation de la base de donnée")
             ->setHelp("command")
