@@ -40,7 +40,7 @@ class ImportDatabaseCommand extends Command
             ->addOption(
                 'skip-existing',
                 null,
-                InputOption::VALUE_OPTIONAL,
+                InputOption::VALUE_NONE,
                 'Ignorer les tables existantes lors de l\'importation',
                 'dev'
             )
@@ -79,7 +79,7 @@ class ImportDatabaseCommand extends Command
 
         // Executer l'importation
         $process = Process::fromShellCommandline($importCommand);
-        $process->setTimeout(600);
+        $process->setTimeout(1200);
 
         $this->startTime  = microtime(true);
         $lastOutputLength = 0;
