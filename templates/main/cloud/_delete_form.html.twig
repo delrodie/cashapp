@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_main_cloud_delete', {'id': cloud.id}) }}" onsubmit="return confirm('Voulez-cous supprimer cette url?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ cloud.id) }}">
+    <button class="btn btn-danger">Supprimer</button>
+</form>

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Cloud{% endblock %}
+
+{% block body %}
+    <h1>Create new Cloud</h1>
+
+    {{ include('main/cloud/_form.html.twig') }}
+
+    <a href="{{ path('app_main_cloud_index') }}">back to list</a>
+{% endblock %}

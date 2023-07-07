@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des clouds{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des clouds</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Paramètres</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Administrateur</a></li>
+                                <li class="breadcrumb-item" aria-current="page">clouds</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-package"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#primary-header-modal"><i class="ti-plus"></i> Ajouter</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center text-uppercase">#</th>
+                                        <th class="text-center text-uppercase">url</th>
+                                        <th class="text-center text-uppercase">actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for cloud in clouds %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td class="text-center">{{ cloud.url }}</td>
+                                            <td class="text-center">
+                                                <a href="{{ path('app_main_cloud_show', {'id': cloud.id}) }}"><i class="ti-receipt"></i></a>
+                                                &nbsp; | &nbsp;
+                                                <a href="{{ path('app_main_cloud_edit', {'id': cloud.id}) }}"><i class="ti-pencil-alt"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="3">Aucun cloud trouvé</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="primary-header-modal" class="modal fade" tabindex="-1" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
+            {{ include('main/cloud/_form.html.twig') }}
+        </div>
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="pris">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script>
+        $('#listes').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ]
+        } );
+    </script>
+{% endblock %}
