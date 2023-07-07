@@ -39,16 +39,20 @@ class ApiSynchronisationController extends AbstractController
 
         $message=null;
 
-        foreach ($data['factures'] as $factureData){
-            $facture = $this->synchronisation->facture($factureData);
-            if ($facture) $message= true;
-            else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        if ($data['factures']) {
+            foreach ($data['factures'] as $factureData) {
+                $facture = $this->synchronisation->facture($factureData);
+                if ($facture) $message = true;
+                else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+            }
         }
 
-        foreach ($data['achats'] as $achatData){
-            $achat = $this->synchronisation->achat($achatData);
-            if ($achat) $message = true;
-            else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        if ($data['achats']) {
+            foreach ($data['achats'] as $achatData) {
+                $achat = $this->synchronisation->achat($achatData);
+                if ($achat) $message = true;
+                else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+            }
         }
 
         return new JsonResponse($message, Response::HTTP_OK);
