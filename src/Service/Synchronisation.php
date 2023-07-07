@@ -51,7 +51,7 @@ class Synchronisation
         if (!$entity){
             $newCaisse = new User();
             $newCaisse->setUsername($caisse['username']);
-            $newCaisse->setRoles($caisse['password']);
+            $newCaisse->setPassword($caisse['password']);
             $newCaisse->setRoles($caisse['roles']);
             $newCaisse->setConnexion($caisse['connexion']);
             $newCaisse->setLastConnectedAt(new \DateTime($caisse['lastConnectedAt']['date']));
@@ -66,7 +66,7 @@ class Synchronisation
     public function facture(array $facture)
     {
         $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]);
-        if ($exist) return;
+        if (!$exist) return;
 
         $newFacture = new Facture();
         $newFacture->setCode($facture['code']);
