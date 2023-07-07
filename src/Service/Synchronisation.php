@@ -54,7 +54,7 @@ class Synchronisation
             $newCaisse->setRoles($caisse['password']);
             $newCaisse->setRoles($caisse['roles']);
             $newCaisse->setConnexion($caisse['connexion']);
-            $newCaisse->setLastConnectedAt($caisse['lastConnectedAt']);
+            $newCaisse->setLastConnectedAt(new \DateTime($caisse['lastConnectedAt']['date']));
 
             $this->userRepository->save($newCaisse, true);
             $entity = $newCaisse;
