@@ -20,4 +20,12 @@ class ArchiveCategorieRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Categorie::class);
     }
+
+    public function getAll()
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('d')
+            ->leftJoin('c.domaine', 'd')
+            ->getQuery()->getResult();
+    }
 }

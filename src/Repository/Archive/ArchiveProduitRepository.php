@@ -30,4 +30,12 @@ class ArchiveProduitRepository extends ServiceEntityRepository
             ->getQuery()->getResult()
             ;
     }
+
+    public function getAll()
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->leftJoin('p.categorie', 'c')
+            ->getQuery()->getResult();
+    }
 }

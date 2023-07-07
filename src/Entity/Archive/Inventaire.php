@@ -2,6 +2,7 @@
 
 namespace App\Entity\Archive;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -114,6 +115,167 @@ class Inventaire
      * })
      */
     private $fournisseur;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function setReference(?string $reference): static
+    {
+        $this->reference = $reference;
+
+        return $this;
+    }
+
+    public function getRefFournisseur(): ?string
+    {
+        return $this->refFournisseur;
+    }
+
+    public function setRefFournisseur(?string $refFournisseur): static
+    {
+        $this->refFournisseur = $refFournisseur;
+
+        return $this;
+    }
+
+    public function getDate(): ?string
+    {
+        return $this->date;
+    }
+
+    public function setDate(string $date): static
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getMontant(): ?int
+    {
+        return $this->montant;
+    }
+
+    public function setMontant(?int $montant): static
+    {
+        $this->montant = $montant;
+
+        return $this;
+    }
+
+    public function getDeduction(): ?int
+    {
+        return $this->deduction;
+    }
+
+    public function setDeduction(?int $deduction): static
+    {
+        $this->deduction = $deduction;
+
+        return $this;
+    }
+
+    public function getNombreproduit(): ?int
+    {
+        return $this->nombreproduit;
+    }
+
+    public function setNombreproduit(?int $nombreproduit): static
+    {
+        $this->nombreproduit = $nombreproduit;
+
+        return $this;
+    }
+
+    public function isFlag(): ?bool
+    {
+        return $this->flag;
+    }
+
+    public function setFlag(?bool $flag): static
+    {
+        $this->flag = $flag;
+
+        return $this;
+    }
+
+    public function isStatut(): ?bool
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?bool $statut): static
+    {
+        $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getPubliePar(): ?string
+    {
+        return $this->publiePar;
+    }
+
+    public function setPubliePar(?string $publiePar): static
+    {
+        $this->publiePar = $publiePar;
+
+        return $this;
+    }
+
+    public function getModifiePar(): ?string
+    {
+        return $this->modifiePar;
+    }
+
+    public function setModifiePar(?string $modifiePar): static
+    {
+        $this->modifiePar = $modifiePar;
+
+        return $this;
+    }
+
+    public function getPublieLe(): ?\DateTimeInterface
+    {
+        return $this->publieLe;
+    }
+
+    public function setPublieLe(?\DateTimeInterface $publieLe): static
+    {
+        $this->publieLe = $publieLe;
+
+        return $this;
+    }
+
+    public function getModifieLe(): ?\DateTimeInterface
+    {
+        return $this->modifieLe;
+    }
+
+    public function setModifieLe(?\DateTimeInterface $modifieLe): static
+    {
+        $this->modifieLe = $modifieLe;
+
+        return $this;
+    }
+
+    public function getFournisseur(): ?Fournisseur
+    {
+        return $this->fournisseur;
+    }
+
+    public function setFournisseur(?Fournisseur $fournisseur): static
+    {
+        $this->fournisseur = $fournisseur;
+
+        return $this;
+    }
 
 
 }
