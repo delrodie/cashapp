@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CloudRepository;
 use App\Repository\Main\FactureRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,7 +24,7 @@ class SyncDataCommand extends Command
 {
     public function __construct(
         private FactureRepository $factureRepository, private EntityManagerInterface $entityManager,
-        private CloudRepository $cloudRepository
+        private CloudRepository $cloudRepository, private AchatRepository $achatRepository
     )
     {
         parent::__construct();
@@ -42,8 +43,9 @@ class SyncDataCommand extends Command
 
         // Récupération de la liste des factures non synchronisées
         $factures = $this->factureRepository->getFactureNoSync();
+        $achats = $this->achatRepository->getAchatNoSync();
 
-        if ($factures) {
+        if ($factures || $achats) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]);
             if (!$cloud) $url = "https://localhost:8000/api/sync/";
             else $url = "{$cloud->getUrl()}/api/sync/";
@@ -54,15 +56,23 @@ class SyncDataCommand extends Command
                 $response = $httpCLient->request('POST', $url, [
                     'json' => [
                         'factures' => $factures,
-//                    'achats' => 'test'
+                        'achats' => $achats
                     ]
                 ]);
                 if ($response->getStatusCode() === 200) {
                     if ($response->getContent()) {//dd('ici');
+                        // Mise à jour des factures locales
                         foreach ($factures as $facture) {
                             $facture->setSync(true);
                             $this->entityManager->persist($facture);
                         }
+
+                        // Mise à jour des achats locaux
+                        foreach ($achats as $achat){
+                            $achat->setSync(true);
+                            $this->entityManager->persist($achat);
+                        }
+
                         $this->entityManager->flush();
                         $io->success('Synchronisation effectuée avec succès');
                     } else {

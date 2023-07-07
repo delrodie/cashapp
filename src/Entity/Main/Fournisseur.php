@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FournisseurRepository::class)]
-class Fournisseur
+class Fournisseur implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -107,5 +107,16 @@ class Fournisseur
         }
 
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'nom' => $this->nom,
+            'contact' => $this->contact,
+            'achats' => $this->achats
+        ];
     }
 }

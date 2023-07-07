@@ -211,7 +211,7 @@ class Facture implements \JsonSerializable
             'produits' => $this->produits,
             'client' => $this->client?->jsonSerialize(),
             'createdAt' => $this->createdAt,
-            'caisse' => $this->caisse ? $this->caisse->jsonSerialize() : null,
+            'caisse' => $this->caisse?->jsonSerialize(),
             'sync' => $this->sync,
         ];
     }

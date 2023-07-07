@@ -97,6 +97,7 @@
                                                         <input type="hidden" name="productId" id="productId" value="">
                                                         <input type="hidden" name="prixVente" id="productPrixvente" value="">
                                                         <input type="hidden" name="code" id="code" value="">
+                                                        <input type="hidden" name="codebarre" id="codebarre" value="">
                                                         <button id="add-product-button" class="btn btn-outline-primary btn-sm">Ajouter un produit</button>
                                                     </div>
                                                 </div>
@@ -177,7 +178,8 @@
                                     label: data[i].libelle,
                                     prixVente: data[i].prixVente,
                                     produitId: data[i].produitId,
-                                    code: data[i].code
+                                    code: data[i].code,
+                                    codebarre: data[i].codebarre
                                 });
                             }
                             response(suggestions)
@@ -188,10 +190,12 @@
                 select: function (event, ui) {
                     $(this).val(ui.item.libelle);
                     console.log(ui.item.prixVente);
+                    console.log(ui.item.codebarre)
                     $('#productPrixvente').val(ui.item.prixVente);
                     $('#productPrixventeDisplay').text(ui.item.prixVente);
                     $('#productId').val(ui.item.produitId);
                     $('#code').val(ui.item.code);
+                    $('#codebarre').val(ui.item.codebarre)
                 }
             });
 
@@ -264,6 +268,7 @@
                 var prixVente = parseInt($('input[name="prixVente"]').val());
                 var id = parseInt($('input[name="productId"]').val());
                 var code = $('input[name="code"]').val();
+                var codebarre = $('input[name="codebarre"]').val();
 
                 // Vérifier si les champs ne sont pas vides
                 if (libelle.trim() === '' || isNaN(quantite) || isNaN(montant) || isNaN(prixVente)) {
@@ -281,7 +286,8 @@
                     quantite: quantite,
                     montant: montant,
                     benefice: benefice,
-                    code: code
+                    code: code,
+                    codebarre: codebarre
                 };
 
                 console.log(produit)
@@ -295,6 +301,7 @@
                 $('input[name="prixVente"]').val('');
                 $('input[name="produitId"]').val('');
                 $('input[name="code"]').val('');
+                $('input[name="codebarre"]').val('');
             });
 
             // Gérer la soumission du formulaire principal

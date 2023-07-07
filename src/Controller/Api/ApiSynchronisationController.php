@@ -4,6 +4,7 @@ namespace App\Controller\Api;
 
 use App\Entity\Main\Client;
 use App\Entity\Main\Facture;
+use App\Repository\Main\AchatRepository;
 use App\Repository\Main\FactureRepository;
 use App\Service\Synchronisation;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,7 +21,7 @@ class ApiSynchronisationController extends AbstractController
 {
     public function __construct(
         private FactureRepository $factureRepository, private Synchronisation $synchronisation,
-        private SerializerInterface $serializer,
+        private SerializerInterface $serializer, private AchatRepository $achatRepository
     )
     {
     }
@@ -30,19 +31,26 @@ class ApiSynchronisationController extends AbstractController
     {
 //        $factures = $this->factureRepository->getFactureNoSync();
 //        $jsonContent = json_encode($factures);
+//        $achats = $this->achatRepository->getAchatNoSync();
+//        $jsonContent = json_encode($achats);
 
         $jsonContent = $request->getContent();
-        $data = json_decode($jsonContent, true); //dd($data['factures']);
+        $data = json_decode($jsonContent, true); //dd($jsonContent);
 
         $message=null;
 
         foreach ($data['factures'] as $factureData){
             $facture = $this->synchronisation->facture($factureData);
             if ($facture) $message= true;
-
-            return new JsonResponse($message, Response::HTTP_OK);
+            else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
         }
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        foreach ($data['achats'] as $achatData){
+            $achat = $this->synchronisation->achat($achatData);
+            if ($achat) $message = true;
+            else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        }
+
+        return new JsonResponse($message, Response::HTTP_OK);
     }
 }

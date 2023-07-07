@@ -40,7 +40,8 @@ class ApiAchatController extends AbstractController
                 'produitId' => $produit->getId(),
                 'libelle' => $produit->getLibelle(),
                 'prixVente' => $produit->getPrixVente(),
-                'code' => $produit->getReference()
+                'code' => $produit->getReference(),
+                'codebarre' => $produit->getCodebarre()
             ];
         }
 

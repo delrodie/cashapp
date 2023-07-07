@@ -39,6 +39,16 @@ class AchatRepository extends ServiceEntityRepository
         }
     }
 
+    public function getAchatNoSync()
+    {
+        return $this->createQueryBuilder('a')
+            ->addSelect('f')
+            ->leftJoin('a.fournisseur', 'f')
+            ->where('a.sync IS NULL')
+            ->getQuery()->getResult()
+            ;
+    }
+
 //    /**
 //     * @return Achat[] Returns an array of Achat objects
 //     */

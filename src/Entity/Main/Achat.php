@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AchatRepository::class)]
-class Achat
+class Achat implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -43,6 +43,9 @@ class Achat
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
     #[Groups('achat')]
     private array $produits = [];
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $sync = null;
 
     public function getId(): ?int
     {
@@ -131,5 +134,31 @@ class Achat
         $this->produits = $produits;
 
         return $this;
+    }
+
+    public function isSync(): ?bool
+    {
+        return $this->sync;
+    }
+
+    public function setSync(?bool $sync): static
+    {
+        $this->sync = $sync;
+
+        return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'numFacture' => $this->numFacture,
+            'dateAchat' => $this->dateAchat,
+            'montant' => $this->montant,
+            'benefice' => $this->benefice,
+            'produits' => $this->produits,
+            'fournisseur' => $this->fournisseur?->jsonSerialize()
+        ];
     }
 }
