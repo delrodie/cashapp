@@ -30,7 +30,7 @@ class ApiSynchronisationController extends AbstractController
     public function create(Request $request)
     {
 //        $factures = $this->factureRepository->getFactureNoSync();
-//        $jsonContent = json_encode($factures);
+//        $jsonContent = json_encode($factures); dd($jsonContent);
 //        $achats = $this->achatRepository->getAchatNoSync();
 //        $jsonContent = json_encode($achats);
 

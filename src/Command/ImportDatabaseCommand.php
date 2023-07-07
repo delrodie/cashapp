@@ -78,7 +78,7 @@ class ImportDatabaseCommand extends Command
 
         // Executer l'importation
         $process = Process::fromShellCommandline($importCommand);
-        $process->setTimeout(1200);
+        $process->setTimeout(120000);
 
         $this->startTime  = microtime(true);
         $lastOutputLength = 0;

@@ -1,11 +1,11 @@
 <!DOCTYPE>
 <html>
-<body onload="window.print(); window.close()">
+<body onload="window.print();">
 <table width="100%">
     <tr>
         <td>
             <div class="mb-5" style="font-size: 0.7em; font-family: Consolas; text-align: center">
-                <a href="{{ absolute_url(path('app_main_facture_index')) }}" accesskey="0"><strong>SUPERETTE EXPRESS</strong></a><br>
+                <a href="{{ absolute_url(path('app_main_facture_index')) }}" accesskey="0"><strong>Boutok AmerikCanada</strong></a><br>
                 Faya Nouveau goudron <br>
                 Tel: +225 0759136978 / 0747742221
             </div>
@@ -56,6 +56,16 @@
             <td colspan="2" style="text-align:right;">Total:</td>
             <td style="text-align:right;"><strong>{{ facture.montant|number_format(0,'',' ') }}</strong></td>
         </tr>
+        {% if facture.remise %}
+            <tr class="mt-5">
+                <td colspan="2" style="text-align:right;">Remise:</td>
+                <td style="text-align:right;"><strong>{{ facture.remise) }} %</strong></td>
+            </tr>
+            <tr class="mt-5">
+                <td colspan="2" style="text-align:right;">NAP:</td>
+                <td style="text-align:right;"><strong>{{ facture.nap|number_format(0,'',' ') }}</strong></td>
+            </tr>
+        {% endif %}
         <tr class="mt-5">
             <td colspan="2" style="text-align:right;">Verse:</td>
             <td style="text-align:right;"><strong>{{ facture.verse|number_format(0,'',' ') }}</strong></td>
@@ -71,7 +81,7 @@
     <tr>
         <td>
             <em>Nous vous remercions de nous avoir visités</em><br>
-            <em>NB: La superette est ouverte en permanence <br> de O8h à 20h</em>
+            <em>NB: La superette est ouverte en permanence <br> de O7h à 21h</em>
         </td>
     </tr>
 </table>

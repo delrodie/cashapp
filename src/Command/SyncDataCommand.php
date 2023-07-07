@@ -50,7 +50,6 @@ class SyncDataCommand extends Command
             if (!$cloud) $url = "https://localhost:8000/api/sync/";
             else $url = "{$cloud->getUrl()}/api/sync/";
 
-
             $httpCLient = HttpClient::create();
             try {
                 $response = $httpCLient->request('POST', $url, [
@@ -59,6 +58,7 @@ class SyncDataCommand extends Command
                         'achats' => $achats
                     ]
                 ]);
+                dd($response);
                 if ($response->getStatusCode() === 200) {
                     if ($response->getContent()) {//dd('ici');
                         // Mise à jour des factures locales
@@ -79,7 +79,7 @@ class SyncDataCommand extends Command
                         $io->warning("Aucune donnée à synchroniser!");
                     }
                 } else {
-                    $io->warning('Aucune donnée à synchroniser. La base de données distante est à jour');
+                    $io->warning('Aucune donnée à synchroniser. La base de données distante est à jour ', $response);
                 }
             } catch (ClientExceptionInterface $e) {
                 $io->error("Une erreur est subvenue lors de la synchronisation : ", $e->getMessage());
