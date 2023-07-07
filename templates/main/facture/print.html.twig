@@ -34,24 +34,7 @@
     <tr>
         <td style="margin-top: 30px;"></td>
     </tr>
-    {% if facture.remise %}
-        <tr class="mt-5">
-            <td colspan="2" style="text-align:right;">Remise:</td>
-            <td style="text-align:right;"><strong>{{ facture.remise }}%</strong></td>
-        </tr>
-        <tr class="mt-5">
-            <td colspan="2" style="text-align:right;">Net à payer:</td>
-            <td style="text-align:right;"><strong>{{ facture.montant|number_format(0,'',' ')  }}</strong></td>
-        </tr>
-        <tr class="mt-5">
-            <td colspan="2" style="text-align:right;">Verse:</td>
-            <td style="text-align:right;"><strong>{{ facture.verse|number_format(0,'',' ') }}</strong></td>
-        </tr>
-        <tr class="mt-5">
-            <td colspan="2" style="text-align:right;">Monnaie:</td>
-            <td style="text-align:right;"><strong>{{ facture.monnaie|number_format(0,'',' ') }}</strong></td>
-        </tr>
-    {% else %}
+    
         <tr class="mt-5">
             <td colspan="2" style="text-align:right;">Total:</td>
             <td style="text-align:right;"><strong>{{ facture.montant|number_format(0,'',' ') }}</strong></td>
