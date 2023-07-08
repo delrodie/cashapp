@@ -26,9 +26,16 @@ class ProduitController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $slug = $this->utilities->slug($produit->getLibelle());
+            $exist = $produitRepository->findOneBy(['slug'=>$slug]);
+            if ($exist){
+                notyf()->addError("Echec! ce produit existe déjà sous le code: {$exist->getReference()}!");
+                return $this->redirectToRoute('app_main_produit_index',[], Response::HTTP_SEE_OTHER);
+            }
+
             $produit->setReference($this->utilities->referenceProduit($produit));
             $produit->setLibelle(strtoupper($produit->getLibelle()));
-            $produit->setSlug($this->utilities->slug($produit->getLibelle()));
+            $produit->setSlug($slug);
             $produitRepository->save($produit, true);
 
             notyf()->addSuccess("Le produit {$produit->getLibelle()} a été ajouté avec succès!");

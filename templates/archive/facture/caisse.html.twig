@@ -14,7 +14,7 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Archives</a></li>
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Factures</a></li>
-                                <li class="breadcrumb-item" aria-current="page">factures</li>
+                                <li class="breadcrumb-item" aria-current="page">Caisse</li>
                             </ol>
                         </nav>
                     </div>
@@ -47,6 +47,7 @@
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
                                         <th class="text-center text-uppercase">Date</th>
+                                        <th class="text-center text-uppercase">Caisse</th>
                                         <th class="text-center text-uppercase">Montant</th>
                                     </tr>
                                     </thead>
@@ -55,6 +56,7 @@
                                         <tr>
                                             <td>{{ loop.index }}</td>
                                             <td class="text-center">{{ facture.date ? facture.date|date('Y-m-d') : '' }}</td>
+                                            <td class="text-left">{{ facture.caisse }}</td>
                                             <td class="text-end">{{ facture.totalMontant }}</td>
                                         </tr>
                                     {% else %}

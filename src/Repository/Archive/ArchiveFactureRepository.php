@@ -29,6 +29,26 @@ class ArchiveFactureRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    public function getRecetteJournaliereGlobale()
+    {
+        return $this->createQueryBuilder('f')
+            ->select('f.date, SUM(f.montant) as totalMontant')
+//            ->addSelect('f.date')
+            ->groupBy('f.date')
+            ->orderBy('f.date',"DESC")
+            ->getQuery()->getResult();
+    }
+
+    public function getRecetteJournaliereByCaisse()
+    {
+        return $this->createQueryBuilder('f')
+            ->select('f.date, SUM(f.montant) as totalMontant, u.username as caisse')
+            ->leftJoin('f.user', 'u')
+            ->groupBy('f.date, caisse')
+            ->orderBy('f.date', "DESC")
+            ->getQuery()->getResult();
+    }
+
     public function getBilan(int $an)
     {
         return $this->createQueryBuilder('f')
