@@ -62,7 +62,7 @@ class SyncDataCommand extends Command
                 // Si le statut du resultat est 100 alors la synchronisation est effective
                 // Sinon si le statut est 101 ainsi la facture existe dans la base de données distante
                 /// Sinon une erreur concernant un des produits de la facture a été rencontrée
-                if ($response->getStatusCode() === 100) {
+                if ($response->getStatusCode() === 201) {
                     if ($response->getContent()) {//dd('ici');
                         // Mise à jour des factures locales
                         foreach ($factures as $facture) {
@@ -81,7 +81,7 @@ class SyncDataCommand extends Command
                     } else {
                         $io->warning("Aucune donnée à synchroniser!");
                     }
-                } elseif ($response->getStatusCode() === 101){
+                } elseif ($response->getStatusCode() === 200){ //dd($response->getContent());
                     if ($response->getContent()){
                         $updateFacture = $this->factureRepository->findOneBy(['code' => $response->getContent()]);
                         if ($updateFacture){

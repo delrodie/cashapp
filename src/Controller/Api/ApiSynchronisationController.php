@@ -62,9 +62,9 @@ class ApiSynchronisationController extends AbstractController
                         'code' => $factureData['code'],
                         'statut' => Self::FACTURE_EXIST
                     ];
-                    return new JsonResponse($message, Response::HTTP_BAD_REQUEST);
+                    return new JsonResponse($message, Response::HTTP_OK);
                 }
-                elseif ($facture === 3) return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+                elseif ($facture === 3) return new JsonResponse(null, Response::HTTP_OK);
                 else $message = true;
             }
         }
