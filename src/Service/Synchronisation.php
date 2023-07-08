@@ -78,9 +78,9 @@ class Synchronisation
         $newFacture->setVerse($facture['verse']);
         $newFacture->setMonnaie($facture['monnaie']);
         $newFacture->setProduits($facture['produits']);
-        $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date'])); dd($newFacture);
+        $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date']));
         $newFacture->setSync(true);
-        $newFacture->setClient($this->client($facture['client']));
+        $newFacture->setClient($this->client($facture['client']));dd($newFacture);
         $newFacture->setCaisse($this->caisse($facture['caisse']));
 
         // Mise a jour de la table produit
