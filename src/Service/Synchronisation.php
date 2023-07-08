@@ -66,10 +66,10 @@ class Synchronisation
     public function facture(array $facture)
     {
         $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]);
+        dd($exist);
         if (!$exist) return;
 
         $newFacture = new Facture();
-        dd($newFacture);
         $newFacture->setCode($facture['code']);
         $newFacture->setMontant($facture['montant']);
         $newFacture->setRemise($facture['remise']);
