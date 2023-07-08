@@ -69,6 +69,7 @@ class Synchronisation
         if (!$exist) return;
 
         $newFacture = new Facture();
+        dd($newFacture);
         $newFacture->setCode($facture['code']);
         $newFacture->setMontant($facture['montant']);
         $newFacture->setRemise($facture['remise']);
@@ -90,7 +91,6 @@ class Synchronisation
             $entity->setPrixVente((int) $produit['prixVente']);
             $this->entityManager->persist($entity);
         }
-        dd($newFacture);
 
         $this->factureRepository->save($newFacture, true);
         $this->entityManager->flush();
