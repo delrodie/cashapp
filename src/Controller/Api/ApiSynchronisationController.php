@@ -8,6 +8,7 @@ use App\Repository\Main\AchatRepository;
 use App\Repository\Main\FactureRepository;
 use App\Service\Synchronisation;
 use Doctrine\ORM\EntityManagerInterface;
+use phpDocumentor\Reflection\Types\Self_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -56,12 +57,18 @@ class ApiSynchronisationController extends AbstractController
             foreach ($data['factures'] as $factureData) {
                 $facture = $this->synchronisation->facture($factureData);
 
-                if ($facture === 2) return new JsonResponse($factureData['code'], self::FACTURE_EXIST);
-                elseif ($facture === 3) return new JsonResponse(null, self::PRODUIT_NOT_EXIST);
+                if ($facture === 2) {
+                    $message = [
+                        'code' => $factureData['code'],
+                        'statut' => Self::FACTURE_EXIST
+                    ];
+                    return new JsonResponse($message, Response::HTTP_NOT_MODIFIED);
+                }
+                elseif ($facture === 3) return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
                 else $message = true;
             }
         }
 
-        return new JsonResponse($message, self::SYNCHRO_OK);
+        return new JsonResponse($message, Response::HTTP_CREATED);
     }
 }
