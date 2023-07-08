@@ -156,6 +156,7 @@ class Synchronisation
                 $newProduit->setLibelle($produit['libelle']);
                 $newProduit->setStock($produit['quantite']);
                 $newProduit->setPrixAchat($prixUnitaire);
+                $newProduit->setPrixVente($produit['prixVente']);
                 $newProduit->setReference($produit['code']);
                 $newProduit->setSlug($this->utilities->slug($produit['libelle']));
                 $newProduit->setCodebarre($produit['codebarre']);

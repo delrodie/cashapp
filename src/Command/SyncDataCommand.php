@@ -43,7 +43,7 @@ class SyncDataCommand extends Command
 
         // Récupération de la liste des factures non synchronisées
         $factures = $this->factureRepository->getFactureNoSync();
-        $achats = $this->achatRepository->getAchatNoSync(); //dd(json_encode($factures));
+        $achats = $this->achatRepository->getAchatNoSync(); //dd(json_encode($achats));
 
         if ($factures || $achats) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
