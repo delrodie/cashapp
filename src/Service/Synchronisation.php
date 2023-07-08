@@ -65,7 +65,7 @@ class Synchronisation
 
     public function facture(array $facture)
     {
-        $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]); dd($exist);
+        $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]);
         if (!$exist) return;
 
         $newFacture = new Facture();
@@ -90,6 +90,7 @@ class Synchronisation
             $entity->setPrixVente((int) $produit['prixVente']);
             $this->entityManager->persist($entity);
         }
+        dd($newFacture);
 
         $this->factureRepository->save($newFacture, true);
         $this->entityManager->flush();
