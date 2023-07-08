@@ -19,6 +19,10 @@ use Symfony\Component\Validator\Constraints\Json;
 #[Route('/api/sync')]
 class ApiSynchronisationController extends AbstractController
 {
+    public const SYNCHRO_OK = 100;
+    public const FACTURE_EXIST = 101;
+    public const PRODUIT_NOT_EXIST = 102;
+
     public function __construct(
         private FactureRepository $factureRepository, private Synchronisation $synchronisation,
         private SerializerInterface $serializer, private AchatRepository $achatRepository
@@ -39,14 +43,6 @@ class ApiSynchronisationController extends AbstractController
 
         $message=null;
 
-        if ($data['factures']) {
-            foreach ($data['factures'] as $factureData) {
-                $facture = $this->synchronisation->facture($factureData);
-                if ($facture) $message = true;
-                else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-            }
-        }
-
         if ($data['achats']) {
             foreach ($data['achats'] as $achatData) {
                 $achat = $this->synchronisation->achat($achatData);
@@ -55,6 +51,17 @@ class ApiSynchronisationController extends AbstractController
             }
         }
 
-        return new JsonResponse($message, Response::HTTP_OK);
+        // Traitement des factures transmises
+        if ($data['factures']) {
+            foreach ($data['factures'] as $factureData) {
+                $facture = $this->synchronisation->facture($factureData);
+
+                if ($facture === 2) return new JsonResponse($factureData['code'], self::FACTURE_EXIST);
+                elseif ($facture === 3) return new JsonResponse(null, self::PRODUIT_NOT_EXIST);
+                else $message = true;
+            }
+        }
+
+        return new JsonResponse($message, self::SYNCHRO_OK);
     }
 }

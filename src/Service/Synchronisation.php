@@ -63,12 +63,21 @@ class Synchronisation
         return $entity;
     }
 
-    public function facture(array $facture)
+    /**
+     * Methode de synchronisation des factures :
+     *      si l'enregistrement est effectif alors retourner le code 1
+     *      sinon si la facture existe déjà retourner le code 2
+     *      sinon si l'un des produits concernés n'existe pas retourner le code 3
+     *
+     * @param array $facture
+     * @return int
+     * @throws \Exception
+     */
+    public function facture(array $facture): int
     {
         $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]);
-        if ($exist) { dd('entrez de la boucle de condition');
-            return;
-        }
+        //Si la facture existe renvoyer le code 2
+        if ($exist) return 2;
 
         $newFacture = new Facture();
         $newFacture->setCode($facture['code']);
@@ -86,7 +95,8 @@ class Synchronisation
         // Mise a jour de la table produit
         foreach ($facture['produits'] as $produit){
             $entity = $this->produitRepository->findOneBy(['reference' => (int) $produit['code']]);
-            if (!$entity) return;
+            // Si le produit n'existe pas renvoyer le code 3
+            if (!$entity) return 3;
 
             $entity->setStock((int) $entity->getStock() - (int)$produit['quantite']);
             $entity->setPrixVente((int) $produit['prixVente']);
@@ -96,7 +106,8 @@ class Synchronisation
         $this->factureRepository->save($newFacture, true);
         $this->entityManager->flush();
 
-        return true;
+        // Si l'enregistrement a été effective renvoyer le code 1
+        return 1;
     }
 
     public function achat(mixed $achatData)

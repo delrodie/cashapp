@@ -58,8 +58,11 @@ class SyncDataCommand extends Command
                         'achats' => $achats
                     ]
                 ]);
-//                dd($response);
-                if ($response->getStatusCode() === 200) {
+//
+                // Si le statut du resultat est 100 alors la synchronisation est effective
+                // Sinon si le statut est 101 ainsi la facture existe dans la base de données distante
+                /// Sinon une erreur concernant un des produits de la facture a été rencontrée
+                if ($response->getStatusCode() === 100) {
                     if ($response->getContent()) {//dd('ici');
                         // Mise à jour des factures locales
                         foreach ($factures as $facture) {
@@ -78,8 +81,17 @@ class SyncDataCommand extends Command
                     } else {
                         $io->warning("Aucune donnée à synchroniser!");
                     }
-                } else {
-                    $io->warning('Aucune donnée à synchroniser. La base de données distante est à jour ', $response);
+                } elseif ($response->getStatusCode() === 101){
+                    if ($response->getContent()){
+                        $updateFacture = $this->factureRepository->findOneBy(['code' => $response->getContent()]);
+                        if ($updateFacture){
+                            $updateFacture->setSync(true);
+                            $this->factureRepository->save($updateFacture, true);
+                        }
+                    }
+                }
+                else {
+                    $io->error('Echec: un des produits concernés n\'a pas été trouvé dans la base de données distante ');
                 }
             } catch (ClientExceptionInterface $e) {
                 $io->error("Une erreur est subvenue lors de la synchronisation : ", $e->getMessage());
