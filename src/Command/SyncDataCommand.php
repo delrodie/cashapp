@@ -43,10 +43,10 @@ class SyncDataCommand extends Command
 
         // Récupération de la liste des factures non synchronisées
         $factures = $this->factureRepository->getFactureNoSync();
-        $achats = $this->achatRepository->getAchatNoSync();
+        $achats = $this->achatRepository->getAchatNoSync(); dd(json_encode($factures));
 
         if ($factures || $achats) {
-            $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]);
+            $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
             if (!$cloud) $url = "https://localhost:8000/api/sync/";
             else $url = "{$cloud->getUrl()}/api/sync/";
 
