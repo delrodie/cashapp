@@ -85,13 +85,13 @@ class Synchronisation
 
         // Mise a jour de la table produit
         foreach ($facture['produits'] as $produit){
-            $entity = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
+            $entity = $this->produitRepository->findOneBy(['reference' => $produit['code']]); dd($entity);
             if (!$entity) return;
 
             $entity->setStock((int) $entity->getStock() - (int)$produit['quantite']);
             $entity->setPrixVente((int) $produit['prixVente']);
             $this->entityManager->persist($entity);
-        }dd($newFacture);
+        }
 
         $this->factureRepository->save($newFacture, true);
         $this->entityManager->flush();
