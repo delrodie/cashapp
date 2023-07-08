@@ -80,8 +80,8 @@ class Synchronisation
         $newFacture->setProduits($facture['produits']);
         $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date']));
         $newFacture->setSync(true);
-        $newFacture->setClient($this->client($facture['client']));dd($newFacture);
-        $newFacture->setCaisse($this->caisse($facture['caisse']));
+        $newFacture->setClient($this->client($facture['client']));
+        $newFacture->setCaisse($this->caisse($facture['caisse']));dd($newFacture);
 
         // Mise a jour de la table produit
         foreach ($facture['produits'] as $produit){
