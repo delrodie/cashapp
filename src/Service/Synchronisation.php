@@ -81,7 +81,7 @@ class Synchronisation
         $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date']));
         $newFacture->setSync(true);
         $newFacture->setClient($this->client($facture['client']));
-        $newFacture->setCaisse($this->caisse($facture['caisse']));dd($newFacture);
+        $newFacture->setCaisse($this->caisse($facture['caisse']));
 
         // Mise a jour de la table produit
         foreach ($facture['produits'] as $produit){
@@ -91,7 +91,7 @@ class Synchronisation
             $entity->setStock((int) $entity->getStock() - (int)$produit['quantite']);
             $entity->setPrixVente((int) $produit['prixVente']);
             $this->entityManager->persist($entity);
-        }
+        }dd($newFacture);
 
         $this->factureRepository->save($newFacture, true);
         $this->entityManager->flush();
