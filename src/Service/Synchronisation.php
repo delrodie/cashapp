@@ -65,7 +65,7 @@ class Synchronisation
 
     public function facture(array $facture)
     {
-        $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]);
+        $exist = $this->factureRepository->findOneBy(['code' => $facture['code']]); dd($exist);
         if (!$exist) return;
 
         $newFacture = new Facture();
