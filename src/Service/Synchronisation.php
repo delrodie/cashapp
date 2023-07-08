@@ -110,10 +110,20 @@ class Synchronisation
         return 1;
     }
 
-    public function achat(mixed $achatData)
+    /**
+     * Methode de synchronisation des achats :
+     *      Si l'enregistrement est effectif alors retourner le code 1
+     *      Sinon si l'achat existe déjà retourner le code 2
+     *      Sinon si la catégorie d'un produit des produits concernés n'existe pas retourner le code 3
+     *
+     * @param mixed $achatData
+     * @return int
+     * @throws \Exception
+     */
+    public function achat(mixed $achatData): int
     {
         $exist = $this->achatRepository->findOneBy(['code' => $achatData['code']]);
-        if ($exist) return;
+        if ($exist) return 2;
 
         $newAchat = new Achat();
         $newAchat->setCode($achatData['code']);
@@ -139,7 +149,7 @@ class Synchronisation
                 // Recuperation de la categorie concernée
                 $code = substr(strval($produit['code']),0,4);
                 $categorie = $this->categorieRepository->findOneBy(['code' => $code]);
-                if (!$categorie) return;
+                if (!$categorie) return 3;
 
                 // Instanciation du nouveau produit
                 $newProduit = new Produit();
@@ -158,7 +168,7 @@ class Synchronisation
         $this->achatRepository->save($newAchat, true);
         $this->entityManager->flush();
 
-        return true;
+        return 1;
     }
 
     public function fournisseur(array $fournisseur): Fournisseur

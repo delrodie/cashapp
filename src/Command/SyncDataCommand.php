@@ -81,23 +81,47 @@ class SyncDataCommand extends Command
                     } else {
                         $io->warning("Aucune donnée à synchroniser!");
                     }
-                } elseif ($response->getStatusCode() === 200){ //dd($response->getContent());
-                    if ($response->getContent()){
-                        $updateFacture = $this->factureRepository->findOneBy(['code' => $response->getContent()]);
-                        if ($updateFacture){
-                            $updateFacture->setSync(true);
-                            $this->factureRepository->save($updateFacture, true);
-                        }
+                } elseif ($response->getStatusCode() === 200){
+                    $message = json_decode($response->getContent(), true);
+
+                    $statut = $message['statut'];
+
+                    switch ($statut){
+                        case 101:
+                            $updateFacture = $this->factureRepository->findOneBy(['code' => $message['code']]);
+                            if ($updateFacture){
+                                $updateFacture->setSync(true);
+                                $this->factureRepository->save($updateFacture, true);
+
+                                $io->warning("L'erreur concernant la facture a été resolue avec succès! Veuillez reprendre la synchronisation.");
+                            }
+                            break;
+
+                        case 102:
+                            $io->error('Echec: un des produits concernés n\'a pas été trouvé dans la base de données distante ');
+                            break;
+
+                        case 103:
+                            $updateAchat = $this->achatRepository->findOneBy(['code' => $message['code']]);
+                            if ($updateAchat){
+                                $updateAchat->setSync(true);
+                                $this->achatRepository->save($updateAchat, true);
+
+                                $io->warning("L'erreur concernant l'achat a été resolue avec succès! Veuillez reprendre la synchronisation.");
+                            }
+                            break;
+
+                        case 104:
+                            $io->error("Echèc: la catégorie d'un des produits concernés n'a pas été trouvé dans la base de données distance");
+                            break;
+
                     }
-                }
-                else {
-                    $io->error('Echec: un des produits concernés n\'a pas été trouvé dans la base de données distante ');
                 }
             } catch (ClientExceptionInterface $e) {
                 $io->error("Une erreur est subvenue lors de la synchronisation : ", $e->getMessage());
             }
         }else{
-            $io->warning("La base de données distante est à jour");
+            $io->info("La base de données distante est à jour");
         }
 
         return Command::SUCCESS;

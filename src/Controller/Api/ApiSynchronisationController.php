@@ -23,6 +23,8 @@ class ApiSynchronisationController extends AbstractController
     public const SYNCHRO_OK = 100;
     public const FACTURE_EXIST = 101;
     public const PRODUIT_NOT_EXIST = 102;
+    public const ACHAT_EXIST = 103;
+    public const CATEGORIE_NOT_EXIST = 104;
 
     public function __construct(
         private FactureRepository $factureRepository, private Synchronisation $synchronisation,
@@ -47,8 +49,22 @@ class ApiSynchronisationController extends AbstractController
         if ($data['achats']) {
             foreach ($data['achats'] as $achatData) {
                 $achat = $this->synchronisation->achat($achatData);
-                if ($achat) $message = true;
-                else return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+                if ($achat === 2) {
+                    $message = [
+                        'code' => $achatData['code'],
+                        'statut' => self::ACHAT_EXIST
+                    ];
+
+                    return new JsonResponse($message, Response::HTTP_OK);
+                }
+
+                if ($achat === 3) {
+                    $message = ['statut' => self::CATEGORIE_NOT_EXIST];
+
+                    return new JsonResponse($message, Response::HTTP_OK);
+                }
+
+                $message = true;
             }
         }
 
@@ -64,8 +80,13 @@ class ApiSynchronisationController extends AbstractController
                     ];
                     return new JsonResponse($message, Response::HTTP_OK);
                 }
-                elseif ($facture === 3) return new JsonResponse(null, Response::HTTP_OK);
-                else $message = true;
+
+                if ($facture === 3) {
+                    $message =['statut' => self::PRODUIT_NOT_EXIST];
+                    return new JsonResponse($message, Response::HTTP_OK);
+                }
+
+                $message = true;
             }
         }
 
