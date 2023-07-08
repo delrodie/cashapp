@@ -69,7 +69,6 @@ class Synchronisation
         if ($exist) { dd('entrez de la boucle de condition');
             return;
         }
-        dd('sortie de la boucle de condition');
 
         $newFacture = new Facture();
         $newFacture->setCode($facture['code']);
@@ -79,7 +78,7 @@ class Synchronisation
         $newFacture->setVerse($facture['verse']);
         $newFacture->setMonnaie($facture['monnaie']);
         $newFacture->setProduits($facture['produits']);
-        $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date']));
+        $newFacture->setCreatedAt(new \DateTime($facture['createdAt']['date'])); dd($newFacture);
         $newFacture->setSync(true);
         $newFacture->setClient($this->client($facture['client']));
         $newFacture->setCaisse($this->caisse($facture['caisse']));
