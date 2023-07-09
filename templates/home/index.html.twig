@@ -9,7 +9,7 @@
                 <div class="card w-100">
                     <div class="card-body p-4">
                         <h5 class="card-title fw-semibold">Ventes des caisses</h5>
-                        <p class="card-subtitle mb-0">Les totaux des ventes des caisses du mois en cours</p>
+                        <p class="card-subtitle mb-0">Les totaux des ventes des caisses du mois en cours: <strong>{{ "now"|date('F')|trans }} {{ "now"|date('Y') }}</strong></p>
                         <div class="row row-cols-1 row-cols-md-3 mt-9">
 
                             {% for caisse in caisses %}
@@ -78,7 +78,7 @@
                         <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                             <div class="mb-3 mb-sm-0">
                                 <h5 class="card-title fw-semibold">Recettes mensuelles</h5>
-                                <p class="card-subtitle mb-0">Diagramme des recettes mensuelles de l'année en cours</p>
+                                <p class="card-subtitle mb-0">Diagramme des recettes mensuelles de l'année <strong>{{ "now"|date('Y') }}</strong> </p>
                             </div>
                         </div>
                         <div class="row align-items-center">

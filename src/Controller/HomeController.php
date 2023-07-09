@@ -17,6 +17,9 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
+        if ($this->getUser()->getRoles()[0] === 'ROLE_CAISSE') {
+            return $this->redirectToRoute('app_main_facture_index',[],Response::HTTP_SEE_OTHER);
+        }
         $periode = [
             'debut' => date('Y-m-01'),
             'fin' => date('Y-m-31')
