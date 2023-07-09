@@ -4,6 +4,7 @@ namespace App\Repository\Main;
 
 use App\Entity\Main\Facture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Func;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -146,6 +147,14 @@ class FactureRepository extends ServiceEntityRepository
             ->leftJoin('f.client', 'cl')
             ->leftJoin('f.caisse', 'ca')
             ->where('f.sync IS NULL')
+            ->getQuery()->getResult();
+    }
+
+    public function getRecetteGlobalParJour()
+    {
+        return $this->createQueryBuilder('f')
+            ->select('f.createdAt, SUM(f.nap) as napTotal')
+            ->groupBy('f.createdAt')
             ->getQuery()->getResult();
     }
 

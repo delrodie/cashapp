@@ -2,16 +2,20 @@
 
 namespace App\Service;
 
+use App\Entity\Archive\Facture;
+use App\Repository\Archive\ArchiveFactureRepository;
 use App\Repository\Main\ClientRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\ProduitRepository;
 use App\Repository\Main\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 
 class Statistiques
 {
     public function __construct(
         private ProduitRepository $produitRepository, private UserRepository $userRepository,
-        private ClientRepository $clientRepository, private FactureRepository $factureRepository
+        private ClientRepository $clientRepository, private FactureRepository $factureRepository,
+        private ArchiveFactureRepository $archiveFactureRepository, private EntityManagerInterface $entityManager,
     )
     {
     }
@@ -132,5 +136,41 @@ class Statistiques
         return $facture;
     }
 
+    public function recetteJournaliere()
+    {
+        $factures = $this->factureRepository->findBy([],['id'=>"DESC"]);
 
+        $napSumByDate = [];
+        foreach ($factures as $facture) {
+            $createdAt = $facture->getCreatedAt();
+            $formattedCreatedAt = $createdAt->format('Y-d-m');
+
+            $nap = $facture->getNap();
+
+            if (!isset($napSumByDate[$formattedCreatedAt])) {
+                $napSumByDate[$formattedCreatedAt] = 0;
+            }
+
+            $napSumByDate[$formattedCreatedAt] += $nap;
+        }
+
+        $nouveaux=[];
+        foreach ($napSumByDate as $date => $value ){
+            $nouveaux[]=[
+                'date' => $date,
+                'totalMontant' => $value
+            ];
+        }
+
+        $aSupprimer = $this->archiveFactureRepository->findOneBy(['reference'=>"038058"]);
+        if ($aSupprimer){
+            $this->archiveFactureRepository->remove($aSupprimer, true);
+        }
+
+        $anciens = $this->archiveFactureRepository->getRecetteJournaliereGlobale();
+
+        $recettes = array_merge($nouveaux, $anciens); //dd($recettes);
+
+        return $recettes;
+    }
 }

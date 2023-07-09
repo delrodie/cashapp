@@ -21,6 +21,15 @@ class ArchiveFactureRepository extends ServiceEntityRepository
         parent::__construct($registry, Facture::class);
     }
 
+    public function remove(Facture $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
     public function getAll()
     {
         return $this->createQueryBuilder('f')
@@ -60,5 +69,13 @@ class ArchiveFactureRepository extends ServiceEntityRepository
                 'code' => "038058"
             ])
             ->getQuery()->getResult();
+    }
+
+    public function suppression()
+    {
+        return $this->createQueryBuilder('f')
+            ->delete(Facture::class, 'f')
+            ->where('f.reference = :code')
+            ->setParameter('code', '038058');
     }
 }

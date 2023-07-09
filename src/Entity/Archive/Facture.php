@@ -2,6 +2,7 @@
 
 namespace App\Entity\Archive;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="facture", indexes={@ORM\Index(name="IDX_FE866410A76ED395", columns={"user_id"})})
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  */
 class Facture
 {
@@ -122,6 +124,16 @@ class Facture
      * })
      */
     private $user;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Archive\Vente", mappedBy="facture", cascade={"remove"})
+     */
+    private $ventes;
+
+    public function __construct()
+    {
+        $this->ventes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -294,6 +306,16 @@ class Facture
         $this->user = $user;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PreRemove
+     */
+    public function preRemove()
+    {
+        foreach ($this->ventes as $vente) {
+            $vente->setFacture(null);
+        }
     }
 
 

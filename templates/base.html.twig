@@ -3,15 +3,14 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="handheldfriendly" content="true" />
+    <meta name="CashApp" content="true" />
     <meta name="MobileOptimized" content="width" />
-    <meta name="description" content="Mordenize" />
-    <meta name="author" content="" />
-    <meta name="keywords" content="Mordenize" />
+    <meta name="description" content="Système de gestion des boutiques de ventes en gros et détails" />
+    <meta name="author" content="Delrodie AMOIKON" />
+    <meta name="keywords" content="Logiciel, superette, stock, caisse" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{% block title %}CashApp :: {% endblock %}</title>
     <link rel="icon" href="{{ absolute_url(asset('assets/img/favicon.ico')) }}">
-    <!--  Required Meta Tag -->
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/style.min.css')) }}">
         <link rel="stylesheet" href="{{ absolute_url(asset('assets/css/app.css')) }}">
@@ -34,7 +33,6 @@
 
 <div class="page-wrapper" id="main-wrapper" data-theme="blue_theme"  data-layout="vertical" data-sidebartype="full" data-sidebar-position="fixed" data-header-position="fixed">
     <aside class="left-sidebar">
-        <!-- Sidebar scroll-->
         <div>
             <div class="brand-logo d-flex align-items-center justify-content-between">
                 <a href="{{ absolute_url(path('app_home')) }}" class="text-nowrap logo-img">
@@ -200,6 +198,32 @@
                     <li class="nav-small-cap">
                         <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
                         <span class="hide-menu">ETATS</span>
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                              <span class="d-flex">
+                                <i class="ti-printer"></i>
+                              </span>
+                            <span class="hide-menu">Finances</span>
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            <li class="sidebar-item">
+                                <a href="{{ absolute_url(path('app_etat_finance_recette')) }}" class="sidebar-link">
+                                    <div class="round-16 d-flex align-items-center justify-content-center">
+                                        <i class="ti-angle-right"></i>
+                                    </div>
+                                    <span class="hide-menu">Recette globale</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{{ absolute_url(path('app_etat_produit_categorie')) }}" class="sidebar-link">
+                                    <div class="round-16 d-flex align-items-center justify-content-center">
+                                        <i class="ti-angle-right"></i>
+                                    </div>
+                                    <span class="hide-menu">Par caisse</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
