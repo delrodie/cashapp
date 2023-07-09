@@ -102,7 +102,7 @@
                         <h5 class="card-title fw-semibold">Top clients</h5>
                         <p class="card-subtitle mb-7">Liste des meilleurs clients</p>
                         <div class="position-relative">
-                            {% for client in clients %}
+                            {% for client in clients|slice(0,7) %}
                                 <div class="d-flex align-items-center justify-content-between mb-7">
                                     <div class="d-flex">
                                         <div class="p-6 bg-light-primary rounded me-6 d-flex align-items-center justify-content-center">

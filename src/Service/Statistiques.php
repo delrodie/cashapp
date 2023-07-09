@@ -44,8 +44,8 @@ class Statistiques
 
     public function recetteCaisse(string $debut=null, string $fin = null): array
     {
+        // Recette de la nouvelle base de données
         $users = $this->userRepository->findAll();
-
         $ventes=[];
         foreach ($users as $user){
             $exist = $this->factureRepository->getVenteByCaisse($user->getId(), $debut, $fin);
@@ -58,7 +58,33 @@ class Statistiques
             }
         }
 
-        return $ventes;
+        // Recettes de l'archive
+        $anciens = $this->archiveFactureRepository->getRecetteByCaisse($debut, $fin);
+
+        // Fusion des deux recettes
+        $recette = array_reduce(array_merge($ventes,$anciens), function ($result, $item){
+            $username = $item['username'];
+            $montant = (int) $item['montant'];
+
+            if (!isset($result[$username])){
+                $result[$username] = [
+                    'montant' => $montant,
+                    'id' => $item['id'],
+                    'username' => $username
+                ];
+            }else{
+                $result[$username]['montant']+=$montant;
+            }
+
+            return $result;
+        }, []);
+
+        $resulat=[];
+        foreach ($recette as $item=>$value){
+            $resulat[]=$value;
+        }
+        //dd($ventes);
+        return $resulat;
     }
 
     public function dernieresFactures(int $limit=null): array
@@ -126,13 +152,19 @@ class Statistiques
 
             $recette = $this->recetteCaisse($debut, $fin);
 
+            // Recettes de l'archive
+            $anciens = $this->archiveFactureRepository->getRecetteByCaisse($debut, $fin);
+            foreach ($anciens as $ancien){
+                $montant += (int) $ancien['montant'];
+            }
+
             $facture[] = [
                 'mois' => "{$i}/01/{$annee}",
                 'montant' => $montant,
                 'caisse' => $recette
             ];
         }
-//        dd($facture);
+        //dd($facture);
         return $facture;
     }
 

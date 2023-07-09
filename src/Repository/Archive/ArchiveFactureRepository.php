@@ -71,11 +71,20 @@ class ArchiveFactureRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function suppression()
+    public function getRecetteByCaisse(string $debut, string $fin)
     {
-        return $this->createQueryBuilder('f')
-            ->delete(Facture::class, 'f')
-            ->where('f.reference = :code')
-            ->setParameter('code', '038058');
+        return $this->createQueryBuilder('af')
+            ->select('SUM(af.montant) as montant, u.id as id, u.username')
+            ->leftJoin('af.user', 'u')
+            ->groupBy('id')
+            ->where('u.username <> :dev')
+            ->andWhere('af.date BETWEEN :debut AND :fin')
+            ->setParameters([
+                'debut' => $debut,
+                'fin' => $fin,
+                'dev' => 'delrodie'
+            ])
+            ->getQuery()->getResult()
+            ;
     }
 }

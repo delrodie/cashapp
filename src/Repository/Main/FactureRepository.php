@@ -158,6 +158,14 @@ class FactureRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    public function getListByClient($client)
+    {
+        return $this->createQueryBuilder('f')
+            ->addSelect('c')
+            ->leftJoin('f.client', 'c')
+            ->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Facture[] Returns an array of Facture objects
 //     */
