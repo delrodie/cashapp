@@ -5,37 +5,61 @@ namespace App\Entity\Main;
 use App\Repository\Main\DestockageRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DestockageRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class Destockage
+class Destockage implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('destockage')]
     private ?int $id = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups('destockage')]
+    private ?int $code = null;
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups('destockage')]
     private ?string $motif = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('destockage')]
     private ?int $montant = null;
 
     #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    #[Groups('destockage')]
     private array $produits = [];
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups('destockage')]
     private ?\DateTimeInterface $createdAt = null;
 
     #[ORM\ManyToOne]
+    #[Groups('destockage')]
     private ?User $user = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('destockage')]
     private ?bool $sync = null;
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCode(): ?int
+    {
+        return $this->code;
+    }
+
+    public function setCode(?int $code): static
+    {
+        $this->code = $code;
+
+        return $this;
     }
 
     public function getMotif(): ?string
@@ -114,5 +138,17 @@ class Destockage
         $this->sync = $sync;
 
         return $this;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'code' => $this->code,
+            'createdAt' => $this->createdAt,
+            'montant' => $this->montant,
+            'produits' => $this->produits,
+            'user' => $this->user?->jsonSerialize()
+        ];
     }
 }

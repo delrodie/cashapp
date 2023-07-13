@@ -39,6 +39,16 @@ class DestockageRepository extends ServiceEntityRepository
         }
     }
 
+    public function getDestockageNoSync()
+    {
+        return $this->createQueryBuilder('d')
+            ->addSelect('u')
+            ->leftJoin('d.user', 'u')
+            ->where('d.sync IS NULL')
+            ->getQuery()->getResult()
+            ;
+    }
+
 //    /**
 //     * @return Destockage[] Returns an array of Destockage objects
 //     */

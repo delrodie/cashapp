@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CloudRepository;
+use App\Repository\Main\DestockageRepository;
 use App\Repository\Main\FactureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,7 +25,8 @@ class SyncDataCommand extends Command
 {
     public function __construct(
         private FactureRepository $factureRepository, private EntityManagerInterface $entityManager,
-        private CloudRepository $cloudRepository, private AchatRepository $achatRepository
+        private CloudRepository $cloudRepository, private AchatRepository $achatRepository,
+        private DestockageRepository $destockageRepository
     )
     {
         parent::__construct();
@@ -44,8 +46,17 @@ class SyncDataCommand extends Command
         // Récupération de la liste des factures non synchronisées
         $factures = $this->factureRepository->getFactureNoSync();
         $achats = $this->achatRepository->getAchatNoSync(); //dd(json_encode($achats));
+        $destockages = $this->destockageRepository->getDestockageNoSync(); //dd(json_encode($destockages));
 
-        if ($factures || $achats) {
+        // Pour test
+        $data = [
+            'factures' => $factures,
+            'achats' => $achats,
+            'destockages' => $destockages
+        ];
+        //dd(json_encode($data));
+
+        if ($factures || $achats || $destockages) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
             if (!$cloud) $url = "https://localhost:8000/api/sync/";
             else $url = "{$cloud->getUrl()}/api/sync/";
@@ -55,7 +66,8 @@ class SyncDataCommand extends Command
                 $response = $httpCLient->request('POST', $url, [
                     'json' => [
                         'factures' => $factures,
-                        'achats' => $achats
+                        'achats' => $achats,
+                        'destockages' => $destockages
                     ]
                 ]);
 //
@@ -74,6 +86,12 @@ class SyncDataCommand extends Command
                         foreach ($achats as $achat){
                             $achat->setSync(true);
                             $this->entityManager->persist($achat);
+                        }
+
+                        // Mise à jour des destockages locaux
+                        foreach ($destockages as $destockage){
+                            $destockage->setSync(true);
+                            $this->entityManager->persist($destockage);
                         }
 
                         $this->entityManager->flush();
@@ -113,6 +131,20 @@ class SyncDataCommand extends Command
 
                         case 104:
                             $io->error("Echèc: la catégorie d'un des produits concernés n'a pas été trouvé dans la base de données distance");
+                            break;
+
+                        case 105:
+                            $updateDestockage = $this->destockageRepository->findOneBy(['code' => $message['code']]);
+                            if ($updateDestockage){
+                                $updateDestockage->setSync(true);
+                                $this->destockageRepository->save($updateDestockage, true);
+
+                                $io->warning("L'erreur concernant le destockage a été résolue avec succès! BVeuillez reprendre la synchronisation.");
+                            }
+                            break;
+
+                        case 106:
+                            $io->error("Echec: l'un des produits concernés n'a pas été trouvé dans la base de données distante");
                             break;
 
                     }

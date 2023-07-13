@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Main\Achat;
 use App\Entity\Main\Client;
+use App\Entity\Main\Destockage;
 use App\Entity\Main\Facture;
 use App\Entity\Main\Fournisseur;
 use App\Entity\Main\Produit;
@@ -11,6 +12,7 @@ use App\Entity\Main\User;
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CategorieRepository;
 use App\Repository\Main\ClientRepository;
+use App\Repository\Main\DestockageRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
@@ -24,7 +26,7 @@ class Synchronisation
         private UserRepository $userRepository, private FactureRepository $factureRepository,
         private ProduitRepository $produitRepository, private AchatRepository $achatRepository,
         private FournisseurRepository $fournisseurRepository, private Utilities $utilities,
-        private CategorieRepository $categorieRepository
+        private CategorieRepository $categorieRepository, private DestockageRepository $destockageRepository
     )
     {
     }
@@ -187,5 +189,35 @@ class Synchronisation
         }
 
         return $exist;
+    }
+
+    public function destockage(mixed $destockageData): int
+    {
+        $exist = $this->destockageRepository->findOneBy(['code' => $destockageData['code']]);
+        if ($exist) return 2;
+
+        $newDestockage = new Destockage();
+        $newDestockage->setCode($destockageData['code']);
+        $newDestockage->setMotif($destockageData['motif']);
+        $newDestockage->setMontant($destockageData['montant']);
+        $newDestockage->setProduits($destockageData['produits']);
+        $newDestockage->setCreatedAt(new \DateTime($destockageData['createdAt']['date']));
+        $newDestockage->setUser($this->caisse($destockageData['user']));
+        $newDestockage->setSync(true);
+
+        foreach ($destockageData['produits'] as $produit){
+            $entity = $this->produitRepository->findOneBy(['reference']);
+
+            if (!$entity) return 3;
+
+            $entity->setStock((int)$entity->getStock() - (int)$produit['quantite']);
+            $this->entityManager->persist($entity);
+        }
+
+        $this->destockageRepository->save($newDestockage, true);
+        $this->entityManager->flush();
+
+        return 1;
+
     }
 }

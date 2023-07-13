@@ -48,6 +48,7 @@ class ApiDestockageController extends AbstractController
         $destockage->setMotif($destockageData['motif']);
         $destockage->setMontant($destockageData['montant']);
         $destockage->setProduits($produits);
+        $destockage->setCode($this->utilities->codeDestockage());
         $destockage->setUser($this->getUser());
 
         $this->entityManager->persist($destockage);

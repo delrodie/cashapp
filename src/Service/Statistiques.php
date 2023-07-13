@@ -175,7 +175,7 @@ class Statistiques
         $napSumByDate = [];
         foreach ($factures as $facture) {
             $createdAt = $facture->getCreatedAt();
-            $formattedCreatedAt = $createdAt->format('Y-d-m');
+            $formattedCreatedAt = $createdAt->format('Y-m-d');
 
             $nap = $facture->getNap();
 

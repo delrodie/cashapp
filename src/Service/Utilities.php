@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CategorieRepository;
 use App\Repository\Main\ClientRepository;
+use App\Repository\Main\DestockageRepository;
 use App\Repository\Main\DomaineRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
@@ -18,7 +19,8 @@ class Utilities
         private DomaineRepository $domaineRepository, private CategorieRepository $categorieRepository,
         private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
         private AchatRepository $achatRepository, private ClientRepository $clientRepository,
-        private FactureRepository $factureRepository, private UserRepository $userRepository
+        private FactureRepository $factureRepository, private UserRepository $userRepository,
+        private DestockageRepository $destockageRepository
     )
     {
     }
@@ -101,6 +103,14 @@ class Utilities
         if (!$lastFacture) return 100001;
 
         return $lastFacture->getId() + 100001;
+    }
+
+    public function codeDestockage()
+    {
+        $lastDestockage = $this->destockageRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastDestockage) return 1001;
+
+        return  $lastDestockage->getId() + 1001;
     }
 
     public function getUsers(string $username): array

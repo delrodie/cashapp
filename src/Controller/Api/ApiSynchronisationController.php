@@ -25,6 +25,8 @@ class ApiSynchronisationController extends AbstractController
     public const PRODUIT_NOT_EXIST = 102;
     public const ACHAT_EXIST = 103;
     public const CATEGORIE_NOT_EXIST = 104;
+    public const DESTOCKAGE_EXIST = 105;
+    public const DESTOCKANGE_NOT_EXIST = 106;
 
     public function __construct(
         private FactureRepository $factureRepository, private Synchronisation $synchronisation,
@@ -45,6 +47,7 @@ class ApiSynchronisationController extends AbstractController
         $data = json_decode($jsonContent, true); //dd($jsonContent);
 
         $message=null;
+//        dd($data);
 
         if ($data['achats']) {
             foreach ($data['achats'] as $achatData) {
@@ -83,6 +86,30 @@ class ApiSynchronisationController extends AbstractController
 
                 if ($facture === 3) {
                     $message =['statut' => self::PRODUIT_NOT_EXIST];
+                    return new JsonResponse($message, Response::HTTP_OK);
+                }
+
+                $message = true;
+            }
+        }
+
+        // Traitement des destockages transmis
+        if ($data['destockages']){
+            foreach ($data['destockages'] as $destockageData){
+                $destockage = $this->synchronisation->destockage($destockageData);
+
+                if ($destockage === 2) {
+                    $message = [
+                        'code' => $destockageData['code'],
+                        'statut' => self::DESTOCKAGE_EXIST
+                    ];
+
+                    return new JsonResponse($message, Response::HTTP_OK);
+                }
+
+                if ($destockage === 3) {
+                    $message = ['statut' => self::DESTOCKANGE_NOT_EXIST];
+
                     return new JsonResponse($message, Response::HTTP_OK);
                 }
 
