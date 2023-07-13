@@ -51,22 +51,23 @@
                                         <th class="text-center text-uppercase">Produits</th>
                                         <th class="text-center text-uppercase">Quantites</th>
                                         <th class="text-center text-uppercase">Montants</th>
+                                        <th class="text-center text-uppercase">P.A. unitaire</th>
                                         <th class="text-center text-uppercase">Benefices</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for produit in achat.produits %}
+                                    {% for produit in produits %}
                                         <tr>
                                             <td>{{ loop.index }}</td>
-                                            <td class="text-left">{{ produit.code }}</td>
+                                            <td class="text-left">{{ produit.reference }}</td>
                                             <td class="text-left">{{ produit.libelle }}</td>
                                             <td class="text-center">{{ produit.quantite }}</td>
                                             <td class="text-end">{{ produit.montant }}</td>
+                                            <td class="text-end">{{ produit.prixAchat }}</td>
                                             <td class="text-center">{{ produit.benefice }}</td>
                                         </tr>
                                     {% endfor %}
                                     <tr>
-                                        <td></td>
                                         <td></td>
                                         <td>
                                             <em>Fournisseur:</em> <strong>{{ achat.fournisseur.nom }}</strong>
@@ -74,17 +75,24 @@
                                         <td>
                                             <em>Facture:</em> <strong>{{ achat.numFacture }} / {{ achat.dateAchat|date('Y-m-d') }}</strong>
                                         </td>
+                                        <td></td>
                                         <td>
                                             <em>Montant:</em> <strong>{{ achat.montant }}</strong> FCFA
                                         </td>
+                                        <td></td>
                                         <td>
                                             <em>Benefice:</em> <strong>{{ achat.benefice }}</strong> FCFA
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td></tr>
                                     </tbody>
-                                    <tfoot>
-
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="row">
@@ -120,7 +128,8 @@
             dom: 'Bfrtip',
             buttons: [
                 'copy', 'excel', 'pdf'
-            ]
+            ],
+            responsive: true
         } );
     </script>
 {% endblock %}

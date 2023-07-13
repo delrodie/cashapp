@@ -28,7 +28,7 @@ class AchatController extends AbstractController
     public function index(): Response
     {
         return $this->render('main/achat/index.html.twig', [
-            'achats' => $this->achatRepository->findAll(),
+            'achats' => $this->achatRepository->getAllJoinFournisseur(),
         ]);
     }
 
@@ -43,8 +43,26 @@ class AchatController extends AbstractController
     #[Route('/{id}', name: 'app_main_achat_show',methods: ['GET'])]
     public function show(Achat $achat)
     {
+        $produits=[];
+        foreach ($achat->getProduits() as $produit){
+            $entity = $this->produitRepository->findOneBy(['id' => $produit['id']]);
+            $produits[] = [
+                'id' => $entity->getId(),
+                'reference' => $entity->getReference(),
+                'libelle' => $entity->getLibelle(),
+                'prixAchat' => $entity->getPrixAchat(),
+                'prixVente' => $entity->getPrixVente(),
+                'oldPrixAchat' => $entity->getOldPrixAchat(),
+                'stock' => $entity->getStock(),
+                'quantite' => $produit['quantite'],
+                'montant' => $produit['montant'],
+                'benefice' => $produit['benefice']
+            ];
+        }
+
         return $this->render('main/achat/show.html.twig',[
-            'achat' => $achat
+            'achat' => $achat,
+            'produits' => $produits
         ]);
     }
 

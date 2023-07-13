@@ -39,6 +39,15 @@ class AchatRepository extends ServiceEntityRepository
         }
     }
 
+    public function getAllJoinFournisseur()
+    {
+        return $this->createQueryBuilder('a')
+            ->addSelect('f')
+            ->leftJoin('a.fournisseur', 'f')
+            ->getQuery()->getResult()
+            ;
+    }
+
     public function getAchatNoSync()
     {
         return $this->createQueryBuilder('a')
