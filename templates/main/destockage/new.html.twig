@@ -1,0 +1,407 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion des destockages{% endblock %}
+
+{% block body %}
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des destockages</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Stock</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Destockage</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-truck"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Formulaire</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <a href="{{ path('app_main_destockage_index') }}" class="btn btn-primary">Retour à la liste</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="row mt-3">
+                                <div class="col-8 productList">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Liste des produits</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table">
+                                                <thead>
+                                                <tr>
+                                                    <th>Produits</th>
+                                                    <th>Quantite</th>
+                                                    <th>Montant</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                                <tfoot>
+                                                <tr>
+                                                    <td colspan="2">Totaux</td>
+                                                    <td id="totalMontant" class="totaux rouge">0</td>
+                                                    <td></td>
+                                                </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Formulaire</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="productForm">
+                                                <div class="row row-cols-1 g-4">
+                                                    <div class="col mt-3">
+                                                        <label for="">Produit</label>
+                                                        <input type="text" name="libelle" class="form-control" id="productLibelle">
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        <label for="">Quanité</label>
+                                                        <input type="number" name="quantite" class="form-control" id="productQuantite">
+                                                    </div>
+                                                    <span id="productPrixventeDisplay"></span>
+                                                    <div class="col mt-3 d-grid gap-2">
+                                                        <input type="hidden" name="productId" id="productId" value="">
+                                                        <input type="hidden" name="prixVente" id="productPrixvente" value="">
+                                                        <input type="hidden" name="code" id="code" value="">
+                                                        <input type="hidden" name="codebarre" id="codebarre" value="">
+                                                        <button id="add-product-button" class="btn btn-outline-primary btn-sm">Ajouter un produit</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <form id="DestockageForm">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-12 mt-3">
+                                            <label for="">Motif</label>
+                                            <textarea name="motif" id="motif" cols="30" rows="3"
+                                                      class="form-control"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-4 mt-5 d-grid gap-2">
+                                            <button class="btn btn-primary btn-lg" id="saveButton">Enregistrer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/prism.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/sweetalert2/sweetalert2.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    <script src="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.js')) }}"></script>
+
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/sweetalert2/sweetalert2.all.min.js')) }}"></script>
+
+    <script>
+        $(document).ready(function (url) {
+            var saveButton = document.getElementById("saveButton");
+
+            // Configuration de l'autocompletion
+            $('#productLibelle').autocomplete({
+                source: function(request, response){
+                    // Envoi d'une requête AJAX pour récupérer les suggestions de produits
+                    $.ajax({
+                        url: "{{ absolute_url(path('app_api_destockage_index')) }}",
+                        dataType: 'json',
+                        data:{
+                            query: request.term
+                        },
+                        success: function (data) {
+                            var suggestions = [];
+                            for (var i = 0; i < data.length; i++) {
+                                suggestions.push({
+                                    label: data[i].libelle,
+                                    prixVente: data[i].prixVente,
+                                    produitId: data[i].produitId,
+                                    code: data[i].code,
+                                    codebarre: data[i].codebarre
+                                });
+                            }
+                            response(suggestions)
+                        }
+                    });
+                },
+                minLength:3,
+                select: function (event, ui) {
+                    $(this).val(ui.item.libelle);
+                    console.log(ui.item.prixVente);
+                    console.log(ui.item.codebarre)
+                    $('#productPrixvente').val(ui.item.prixVente);
+                    $('#productPrixventeDisplay').text(ui.item.prixVente);
+                    $('#productId').val(ui.item.produitId);
+                    $('#code').val(ui.item.code);
+                    $('#codebarre').val(ui.item.codebarre)
+                }
+            });
+
+            // Ajout des produits à la liste
+            var produits = [];
+            var totalMontant = 0;
+
+            //Fonction pour ajouter un produit
+            function ajouterProduit(produit) {
+
+                //Vérifier si le produit existe dejà dans la liste
+                var produitExistant = produits.find(function (p) {
+                    return p.libelle === produit.libelle
+                });
+
+                if (produitExistant){
+                    alert('Le produit existe déjà dans la liste!');
+                    return;
+                }
+
+                produits.push(produit); // Ajouter un produit au tableau
+
+                // Créer une nouvelle ligne dans la table des produits
+                var newRow = '<tr>' +
+                    '<td>'+ produit.libelle  +'</td>' +
+                    '<td>'+ produit.quantite  +'</td>' +
+                    '<td>'+ produit.montant  +'</td>' +
+                    '<td><button class="btn btn-danger btn-sm delete-product-button"><i class="ti-trash"></i></button></td>' +
+                    '</tr>';
+
+                $('.productList tbody').append(newRow); // Ajout de la nouvelle ligne à la table
+
+                // Mettre à jour le montant total et le bénéfice total
+                totalMontant += produit.montant;
+                console.log(totalMontant)
+
+                // Mettre à jour les totaux dans la table
+                $('.productList tfoot td:eq(1)').text(totalMontant);
+            }
+
+
+            // Gérer l'événement de clic sur le bouton "Ajouter un produit"
+            $('#add-product-button').click(function (e) {
+                e.preventDefault();
+
+                // Récupérer les valeurs du formulaire de produit
+                var libelle = $('input[name="libelle"]').val();
+                var quantite = parseInt($('input[name="quantite"]').val());
+                var prixVente = parseInt($('input[name="prixVente"]').val());
+                var id = parseInt($('input[name="productId"]').val());
+                var code = $('input[name="code"]').val();
+                var codebarre = $('input[name="codebarre"]').val();
+
+                // Vérifier si les champs ne sont pas vides
+                if (libelle.trim() === '' || isNaN(quantite) ) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Echèc!',
+                        text: "Veuillez renseigner le produit ainsi que sa quantité avant de l'ajouter à la liste",
+                    })
+                    return;
+                }
+
+                var montantTotal = prixVente * quantite; // Calcul tu prix d'achat unitaire
+
+                // Créer l'objet produit
+                var produit = {
+                    id: id,
+                    libelle: libelle,
+                    quantite: quantite,
+                    montant: montantTotal,
+                    code: code,
+                    codebarre: codebarre,
+                    prixVente: prixVente
+                };
+
+                console.log(produit)
+
+                ajouterProduit(produit); // Ajouter le produit à la liste
+
+                // Réinitialiser les champs du formulaire de produit
+                $('input[name="libelle"]').val('');
+                $('input[name="quantite"]').val('');
+                $('input[name="montant"]').val('');
+                $('input[name="prixVente"]').val('');
+                $('input[name="produitId"]').val('');
+                $('input[name="code"]').val('');
+                $('input[name="codebarre"]').val('');
+            });
+
+
+            // Gérer l'événement de clic sur le bouton "Supprimer"
+            $(document).on('click', '.delete-product-button', function () {
+                var row = $(this).closest('tr'); // Obtenir la ligne parente du bouton
+                var index = row.index(); // Récupérer l'index de la ligne
+
+                // Supprimer le produit du tableau et de la table
+                var produit = produits.splice(index, 1)[0];
+                row.remove();
+
+                // Mettre à jour les totaux dans la table
+                totalMontant -= produit.montant;
+                $('#totalMontant').text(totalMontant);
+            });
+
+            // Gérer la soumission du formulaire principal
+            $('#DestockageForm').submit(function (e) {
+                e.preventDefault();
+                console.log('formulaire soumis')
+
+                // Récupérer les autres valeurs du formulaire
+                var motif = $('textarea[name="motif"]').val();
+
+                // Verifier si les champs ne sont pas vides
+                if (motif.trim() === '' || produits.length === 0){
+                    // alert("le champs motif ne doit pas être vide!");
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Echèc!',
+                        text: "Veuillez renseigner le motif et ajouter des produits si ce n'est pas encore fait avant de soumettre le formulaire!",
+                    })
+
+                    saveButton.classList.remove("button-processing");
+                    saveButton.innerHTML = "Enregistrer";
+                    return;
+                }
+
+                // Gerer l'objet achat avec les details du formulaire principal
+                var destockage = {
+                    motif: motif,
+                    produits: produits,
+                    montant: totalMontant,
+                };
+
+                console.log(JSON.stringify(destockage))
+
+                // Envoi de l'objet achat à l'API pour enregistrement
+                $.ajax({
+                    url: "{{ absolute_url(path('app_api_destockage_create')) }}",
+                    method: 'POST',
+                    data: JSON.stringify(destockage),
+                    contentType: 'application/json',
+                    success: function(response, txtStatus, xhr){
+                        // Gérer la réponse de l'enregistrement
+                        console.log(response);
+
+                        // Récupérons le statut de la reponse
+                        var status = xhr.status;
+                        console.log('Statut de la reponse : ', status);
+
+                        if (status === 200){
+                            console.log(response)
+
+                            saveButton.classList.remove("button-processing");
+                            saveButton.innerHTML = "Enregistrer";
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Echèc!',
+                                text: response,
+                            })
+                        }
+
+                        if (status === 201){
+                            // Réinitialiser les valeurs et la liste des produits
+                            produits = [];
+                            totalMontant = 0;
+
+                            // Réinitialiser la table des produits
+                            $('.productList tbody').empty();
+                            $('.productList tfoot td:eq(1)').text(totalMontant);
+
+                            // Réinitialiser les champs du formulaire principal
+                            $('select[name="motif"]').val('');
+
+                            const swalWithBootstrapButtons = Swal.mixin({
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                    cancelButton: 'btn btn-danger'
+                                },
+                                buttonsStyling: false
+                            })
+
+                            swalWithBootstrapButtons.fire({
+                                title: 'Enregistrement effectif',
+                                text: "Voulez-vous voir les détails de ce destockage",
+                                icon: 'success',
+                                showCancelButton: true,
+                                confirmButtonText: 'Oui',
+                                cancelButtonText: 'Non',
+                                reverseButtons: true
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    // Redirection en fonction de la reponse de l'utilisateur
+                                    window.location.replace("{{ absolute_url(path('app_home')) }}destockage/"+ response);
+                                } else if (
+                                    /* Read more about handling dismissals below */
+                                    result.dismiss === Swal.DismissReason.cancel
+                                ) {
+                                    // Redirection en fonction de la reponse de l'utilisateur
+                                    window.location.replace("{{ absolute_url(path('app_main_destockage_index')) }}");
+                                }
+                            })
+
+                            // var confirmation = confirm("Destockage enregistré avec succès! Voulez-vous voir les détails?")
+
+                        }
+
+                    },
+                    error: function (xhr, txtStatus, errorThrown) {
+                        // Récupérons le statut de la réponse
+                        var status = xhr.status;
+                        console.log('Status de la reponse : ', status)
+
+                        // Gerons l'erreur de la reponse
+                        console.error(errorThrown)
+                    }
+                })
+            });
+
+
+        })
+    </script>
+{% endblock %}

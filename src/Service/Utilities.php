@@ -135,6 +135,25 @@ class Utilities
         return $users;
     }
 
+    public function produitQuery($query): array
+    {
+        $produits = $this->produitRepository->findByQuery($query); // Recherche du produit en fonction du terme de recherche
+
+        // Création du tableau de suggestion au format Json
+        $suggestions=[];
+        foreach ($produits as $produit){
+            $suggestions[] = [
+                'produitId' => $produit->getId(),
+                'libelle' => $produit->getLibelle(),
+                'prixVente' => $produit->getPrixVente(),
+                'code' => $produit->getReference(),
+                'codebarre' => $produit->getCodebarre()
+            ];
+        }
+
+        return $suggestions;
+    }
+
     /**
      * Formattage slug
      * @param string $string

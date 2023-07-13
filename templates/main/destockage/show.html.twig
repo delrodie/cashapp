@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des destockages{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des destockages</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Stock</a></li>
+                                <li class="breadcrumb-item" aria-current="page">destockages</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-truck"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <a href="{{ absolute_url(path('app_main_destockage_index')) }}" class="btn btn-primary">Retour à la liste </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center text-uppercase">#</th>
+                                        <th class="text-center text-uppercase">References</th>
+                                        <th class="text-center text-uppercase">Produits</th>
+                                        <th class="text-center text-uppercase">Quantites</th>
+                                        <th class="text-center text-uppercase">Montants</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for produit in produits %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td class="text-left">{{ produit.reference }}</td>
+                                            <td class="text-left">{{ produit.libelle }}</td>
+                                            <td class="text-center">{{ produit.quantite }}</td>
+                                            <td class="text-end">{{ produit.montant }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td></td>
+                                        <td>
+                                            <em>Date:</em> <strong>{{ destockage.createdAt|date('Y-m-d') }}</strong>
+                                        </td>
+                                        <td>
+                                            <em>Motif: </em> <strong>{{ destockage.motif|raw }}</strong>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <em>Montant total:</em> <strong>{{ destockage.montant }}</strong> FCFA
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="col mt-5">
+                                    <a href="{{ path('app_main_destockage_delete', {'id': destockage.id}) }}" class="btn btn-danger"
+                                       onclick="return confirm('Voulez-vous vraiment supprimer cet destockage?')"
+                                    >
+                                        <i class="ti-trash"></i>Supprimer
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script>
+        $('#listes').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ],
+            responsive: true
+        } );
+    </script>
+{% endblock %}

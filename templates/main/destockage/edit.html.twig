@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Destockage{% endblock %}
+
+{% block body %}
+    <h1>Edit Destockage</h1>
+
+    {{ include('main/destockage/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_main_destockage_index') }}">back to list</a>
+
+    {{ include('main/destockage/_delete_form.html.twig') }}
+{% endblock %}

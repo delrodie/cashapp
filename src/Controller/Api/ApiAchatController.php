@@ -31,19 +31,7 @@ class ApiAchatController extends AbstractController
     {
         $query = $request->query->get('query'); // Recuperation du terme de recherche
 
-        $produits = $this->produitRepository->findByQuery($query); // Recherche des produits en fonction du terme de recherche
-
-        // Création de tableau de suggestion au format Json
-        $suggestions = [];
-        foreach ($produits as $produit){
-            $suggestions[] = [
-                'produitId' => $produit->getId(),
-                'libelle' => $produit->getLibelle(),
-                'prixVente' => $produit->getPrixVente(),
-                'code' => $produit->getReference(),
-                'codebarre' => $produit->getCodebarre()
-            ];
-        }
+        $suggestions = $this->utilities->produitQuery($query);
 
         return new JsonResponse($suggestions);
     }
