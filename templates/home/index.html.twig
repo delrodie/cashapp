@@ -27,7 +27,7 @@
                                                     <span class="text-dark fw-bold">{{ caisse.montant|number_format(0,'','.') }}</span> FCFA
                                                 </h6>
                                             </div>
-                                            <a href="javascript:void(0)" class="btn btn-primary w-100 mt-3">Détails</a>
+                                            <a href="{{ absolute_url(path('app_etat_facture_caisse')) }}" class="btn btn-primary w-100 mt-3">Détails</a>
                                         </div>
                                     </div>
                                 </div>
@@ -63,7 +63,7 @@
                                     <span class="text-dark fs-3 fw-bold ms-1">Bénéfice estimatif:</span>
                                     <span class="text-success fw-bold fs-3 ms-2">{{ valeurTotal.benefice|number_format(0,'','.') }} FCFA</span>
                                 </div>
-                                <button class="btn btn-light-primary text-primary w-100 mt-3"> Détails </button>
+                                <a href="{{ absolute_url(path('app_etat_produit_valeur')) }}" class="btn btn-light-primary text-primary w-100 mt-3"> Détails </a>
                             </div>
                         </div>
                     </div>
@@ -130,7 +130,7 @@
                         <div class="d-sm-flex d-block align-items-center justify-content-between mb-7">
                             <div class="mb-3 mb-sm-0">
                                 <h5 class="card-title fw-semibold">Dernières factures</h5>
-                                <p class="card-subtitle mb-0">Liste des 10 dernières factures</p>
+                                <p class="card-subtitle mb-0">Liste des 5 dernières factures</p>
                             </div>
                         </div>
                         <div class="table-responsive">

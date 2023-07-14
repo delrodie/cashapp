@@ -32,4 +32,30 @@ class ProduitController extends AbstractController
             'produits' => $this->produitRepository->findBy([],['categorie'=>"ASC"])
         ]);
     }
+
+    #[Route('/valeur/stock', name: 'app_etat_produit_valeur',methods: ['GET'])]
+    public function valeur()
+    {
+        $produits = $this->produitRepository->getAllByStockMoreThanZero();
+
+        $stocks=[];
+        foreach ($produits as $produit){
+            $benefice = ((int)$produit->getPrixVente() - (int)$produit->getPrixAchat()) * (int) $produit->getStock();
+            $stocks[]=[
+                'id' => $produit->getId(),
+                'reference' => $produit->getReference(),
+                'codebarre' => $produit->getCodebarre(),
+                'libelle' => $produit->getLibelle(),
+                'prixAchat' => $produit->getPrixAchat(),
+                'prixVente' => $produit->getPrixVente(),
+                'stock' => $produit->getStock(),
+                'benefice' => $benefice,
+                'categorie' => $produit->getCategorie()->getLibelle(),
+            ];
+        }
+
+        return $this->render('etat/produit/valeur.html.twig',[
+            'produits' => $stocks
+        ]);
+    }
 }

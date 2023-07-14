@@ -92,4 +92,14 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()->getResult()
             ;
     }
+
+    public function getAllByStockMoreThanZero()
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->leftJoin('p.categorie', 'c')
+            ->where('p.stock > 0')
+            ->getQuery()->getResult()
+            ;
+    }
 }
