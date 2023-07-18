@@ -63,92 +63,131 @@ class SyncDataCommand extends Command
 
             $httpCLient = HttpClient::create();
             try {
-                $response = $httpCLient->request('POST', $url, [
-                    'json' => [
-                        'factures' => $factures,
-                        'achats' => $achats,
-                        'destockages' => $destockages
-                    ]
-                ]);
+                do{
+
+                    $currentStatut = null;
+                    $response = $httpCLient->request('POST', $url, [
+                        'json' => [
+                            'factures' => $factures,
+                            'achats' => $achats,
+                            'destockages' => $destockages
+                        ]
+                    ]);
 //
-                // Si le statut du resultat est 100 alors la synchronisation est effective
-                // Sinon si le statut est 101 ainsi la facture existe dans la base de données distante
-                /// Sinon une erreur concernant un des produits de la facture a été rencontrée
-                if ($response->getStatusCode() === 201) {
-                    if ($response->getContent()) {//dd('ici');
-                        // Mise à jour des factures locales
-                        foreach ($factures as $facture) {
-                            $facture->setSync(true);
-                            $this->entityManager->persist($facture);
+                    // Si le statut du resultat est 100 alors la synchronisation est effective
+                    // Sinon si le statut est 101 ainsi la facture existe dans la base de données distante
+                    /// Sinon une erreur concernant un des produits de la facture a été rencontrée
+                    if ($response->getStatusCode() === 201) {
+                        if ($response->getContent()) {//dd('ici');
+                            // Mise à jour des factures locales
+                            foreach ($factures as $facture) {
+                                $facture->setSync(true);
+                                $this->entityManager->persist($facture);
+                            }
+
+                            // Mise à jour des achats locaux
+                            foreach ($achats as $achat){
+                                $achat->setSync(true);
+                                $this->entityManager->persist($achat);
+                            }
+
+                            // Mise à jour des destockages locaux
+                            foreach ($destockages as $destockage){
+                                $destockage->setSync(true);
+                                $this->entityManager->persist($destockage);
+                            }
+
+                            $this->entityManager->flush();
+                            $io->success('Synchronisation effectuée avec succès');
+                            break;
+                        } else {
+                            $io->warning("Aucune donnée à synchroniser!");
+                            break;
+                        }
+                    } elseif ($response->getStatusCode() === 200){
+                        $message = json_decode($response->getContent(), true);
+
+                        $statut = $message['statut'];
+
+                        switch ($statut){
+                            case 101:
+                                $updateFacture = $this->factureRepository->findOneBy(['code' => $message['code']]);
+                                if ($updateFacture){
+                                    $updateFacture->setSync(true);
+                                    $this->factureRepository->save($updateFacture, true);
+
+                                    $io->warning("L'erreur concernant la facture a été resolue avec succès! Veuillez reprendre la synchronisation.");
+                                }
+                                break;
+
+                            case 102:
+                                $io->error('Echec: un des produits concernés n\'a pas été trouvé dans la base de données distante ');
+                                break;
+
+                            case 103:
+                                $updateAchat = $this->achatRepository->findOneBy(['code' => $message['code']]);
+                                if ($updateAchat){
+                                    $updateAchat->setSync(true);
+                                    $this->achatRepository->save($updateAchat, true);
+
+                                    $io->warning("L'erreur concernant l'achat a été resolue avec succès! Veuillez reprendre la synchronisation.");
+                                }
+                                break;
+
+                            case 104:
+                                $io->error("Echèc: la catégorie d'un des produits concernés n'a pas été trouvé dans la base de données distance");
+                                break;
+
+                            case 105:
+                                $updateDestockage = $this->destockageRepository->findOneBy(['code' => $message['code']]);
+                                if ($updateDestockage){
+                                    $updateDestockage->setSync(true);
+                                    $this->destockageRepository->save($updateDestockage, true);
+
+                                    $io->warning("L'erreur concernant le destockage a été résolue avec succès! BVeuillez reprendre la synchronisation.");
+                                }
+                                break;
+
+                            case 106:
+                                $io->error("Echec: l'un des produits concernés n'a pas été trouvé dans la base de données distante");
+                                break;
+
                         }
 
-                        // Mise à jour des achats locaux
-                        foreach ($achats as $achat){
-                            $achat->setSync(true);
-                            $this->entityManager->persist($achat);
+                        // Obtenir le nouveau statut de la réponse et vérifier si c'est 101, 103 ou 105
+                        $message = $response->toArray();
+                        $newStatut = $message['statut'];
+
+                        if ($newStatut === $currentStatut) {
+                            // Si le nouveau statut est identique à l'ancien, il est préférable de sortir de la boucle pour éviter une boucle infinie
+                            $io->error("La synchronisation a échoué avec le même statut de réponse. Arrêt de la synchronisation pour éviter une boucle infinie.");
+                            break;
                         }
 
-                        // Mise à jour des destockages locaux
-                        foreach ($destockages as $destockage){
-                            $destockage->setSync(true);
-                            $this->entityManager->persist($destockage);
-                        }
+                        $currentStatut = $newStatut; // Mettre à jour le statut actuel avec le nouveau statut
 
-                        $this->entityManager->flush();
-                        $io->success('Synchronisation effectuée avec succès');
-                    } else {
-                        $io->warning("Aucune donnée à synchroniser!");
+                        if (in_array($newStatut, [101, 103, 105], true)) {
+                            // Si le nouveau statut est 101, 103 ou 105, passer à la valeur suivante du repository et continuer la boucle
+                            switch ($newStatut) {
+                                case 101:
+                                    $factures = $this->factureRepository->getFactureNoSync();
+                                    break;
+                                case 103:
+                                    $achats = $this->achatRepository->getAchatNoSync();
+                                    break;
+                                case 105:
+                                    $destockages = $this->destockageRepository->getDestockageNoSync();
+                                    break;
+                            }
+                        } else {
+                            // Si le nouveau statut n'est pas 101, 103 ou 105, sortir de la boucle, car la synchronisation a échoué
+                            $io->error("La synchronisation a échoué avec le statut de réponse : $newStatut");
+                            break;
+                        }
                     }
-                } elseif ($response->getStatusCode() === 200){
-                    $message = json_decode($response->getContent(), true);
 
-                    $statut = $message['statut'];
-
-                    switch ($statut){
-                        case 101:
-                            $updateFacture = $this->factureRepository->findOneBy(['code' => $message['code']]);
-                            if ($updateFacture){
-                                $updateFacture->setSync(true);
-                                $this->factureRepository->save($updateFacture, true);
-
-                                $io->warning("L'erreur concernant la facture a été resolue avec succès! Veuillez reprendre la synchronisation.");
-                            }
-                            break;
-
-                        case 102:
-                            $io->error('Echec: un des produits concernés n\'a pas été trouvé dans la base de données distante ');
-                            break;
-
-                        case 103:
-                            $updateAchat = $this->achatRepository->findOneBy(['code' => $message['code']]);
-                            if ($updateAchat){
-                                $updateAchat->setSync(true);
-                                $this->achatRepository->save($updateAchat, true);
-
-                                $io->warning("L'erreur concernant l'achat a été resolue avec succès! Veuillez reprendre la synchronisation.");
-                            }
-                            break;
-
-                        case 104:
-                            $io->error("Echèc: la catégorie d'un des produits concernés n'a pas été trouvé dans la base de données distance");
-                            break;
-
-                        case 105:
-                            $updateDestockage = $this->destockageRepository->findOneBy(['code' => $message['code']]);
-                            if ($updateDestockage){
-                                $updateDestockage->setSync(true);
-                                $this->destockageRepository->save($updateDestockage, true);
-
-                                $io->warning("L'erreur concernant le destockage a été résolue avec succès! BVeuillez reprendre la synchronisation.");
-                            }
-                            break;
-
-                        case 106:
-                            $io->error("Echec: l'un des produits concernés n'a pas été trouvé dans la base de données distante");
-                            break;
-
-                    }
-                }
+                    sleep(5);
+                }while(true);
             } catch (ClientExceptionInterface $e) {
                 $io->error("Une erreur est subvenue lors de la synchronisation : ", $e->getMessage());
             }
