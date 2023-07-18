@@ -176,7 +176,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this;
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize()
     {
         return [
             'id' => $this->id,
