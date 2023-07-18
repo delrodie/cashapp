@@ -12,39 +12,39 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private ?string $username = null;
 
     #[ORM\Column]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private array $roles = [];
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private ?string $password = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private ?int $connexion = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private ?\DateTimeInterface $lastConnectedAt = null;
 
     #[ORM\OneToMany(mappedBy: 'caisse', targetEntity: Facture::class)]
-    #[Groups('facture', 'destockage')]
+    #[Groups(['facture', 'destockage'])]
     private Collection $factures;
 
     public function __construct()

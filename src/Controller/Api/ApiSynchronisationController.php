@@ -94,7 +94,7 @@ class ApiSynchronisationController extends AbstractController
         }
 
         // Traitement des destockages transmis
-        if ($data['destockages']){
+        if ($data['destockages']){ //dd($data['destockages']);
             foreach ($data['destockages'] as $destockageData){
                 $destockage = $this->synchronisation->destockage($destockageData);
 

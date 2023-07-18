@@ -54,7 +54,7 @@ class SyncDataCommand extends Command
             'achats' => $achats,
             'destockages' => $destockages
         ];
-        //dd(json_encode($data));
+//        dd(json_encode($data));
 
         if ($factures || $achats || $destockages) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
@@ -100,10 +100,11 @@ class SyncDataCommand extends Command
                             $this->entityManager->flush();
                             $io->success('Synchronisation effectuée avec succès');
                             break;
-                        } else {
-                            $io->warning("Aucune donnée à synchroniser!");
-                            break;
                         }
+
+                        $io->warning("Aucune donnée à synchroniser!");
+                        break;
+
                     } elseif ($response->getStatusCode() === 200){
                         $message = json_decode($response->getContent(), true);
 
