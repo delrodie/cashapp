@@ -144,6 +144,7 @@ class Destockage implements \JsonSerializable
     {
         return [
             'id' => $this->id,
+            'motif' => $this->motif,
             'code' => $this->code,
             'createdAt' => $this->createdAt,
             'montant' => $this->montant,
