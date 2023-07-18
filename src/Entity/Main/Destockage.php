@@ -8,7 +8,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DestockageRepository::class)]
-#[ORM\HasLifecycleCallbacks]
 class Destockage implements \JsonSerializable
 {
     #[ORM\Id]
@@ -120,12 +119,6 @@ class Destockage implements \JsonSerializable
         $this->user = $user;
 
         return $this;
-    }
-
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): \DateTime
-    {
-        return $this->createdAt = new \DateTime();
     }
 
     public function isSync(): ?bool
