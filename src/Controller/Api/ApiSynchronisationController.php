@@ -44,10 +44,10 @@ class ApiSynchronisationController extends AbstractController
 //        $jsonContent = json_encode($achats);
 
         $jsonContent = $request->getContent();
-        $data = json_decode($jsonContent, true); //dd($jsonContent);
+        $data = json_decode($jsonContent, true); dd($jsonContent);
 
         $message=null;
-        dd($data);
+//        dd($data);
 
         if ($data['achats']) {
             foreach ($data['achats'] as $achatData) {
