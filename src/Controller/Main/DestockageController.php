@@ -43,17 +43,20 @@ class DestockageController extends AbstractController
         $produits=[];
         foreach ($destockage->getProduits() as $produit){
             $entity = $this->produitRepository->findOneBy(['id' => $produit['id']]);
-            $produits[] = [
-                'id' => $entity->getId(),
-                'reference' => $entity->getReference(),
-                'libelle' => $entity->getLibelle(),
-                'prixAchat' => $entity->getPrixAchat(),
-                'prixVente' => $entity->getPrixVente(),
-                'oldPrixAchat' => $entity->getOldPrixAchat(),
-                'stock' => $entity->getStock(),
-                'quantite' => $produit['quantite'],
-                'montant' => $produit['montant'],
-            ];
+            if ($entity){
+                $produits[] = [
+                    'id' => $entity->getId(),
+                    'reference' => $entity->getReference(),
+                    'libelle' => $entity->getLibelle(),
+                    'prixAchat' => $entity->getPrixAchat(),
+                    'prixVente' => $entity->getPrixVente(),
+                    'oldPrixAchat' => $entity->getOldPrixAchat(),
+                    'stock' => $entity->getStock(),
+                    'quantite' => $produit['quantite'],
+                    'montant' => $produit['montant'],
+                ];
+            }
+
         }
         return $this->render('main/destockage/show.html.twig', [
             'destockage' => $destockage,

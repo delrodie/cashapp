@@ -144,7 +144,7 @@ class SyncDataCommand extends Command
                                     $updateDestockage->setSync(true);
                                     $this->destockageRepository->save($updateDestockage, true);
 
-                                    $io->warning("L'erreur concernant le destockage a été résolue avec succès! BVeuillez reprendre la synchronisation.");
+                                    $io->warning("L'erreur concernant le destockage a été résolue avec succès! Veuillez reprendre la synchronisation.");
                                 }
                                 break;
 
