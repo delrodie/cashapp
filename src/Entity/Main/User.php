@@ -185,7 +185,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'password' => $this->password,
             'connexion' => $this->connexion,
             'lastConnectedAt' => $this->lastConnectedAt,
-            'factures' => $this->factures
         ];
     }
 }
