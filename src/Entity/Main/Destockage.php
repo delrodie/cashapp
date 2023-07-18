@@ -42,6 +42,7 @@ class Destockage implements \JsonSerializable
     private ?User $user = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups('destockage')]
     private ?bool $sync = null;
 
     public function getId(): ?int
@@ -147,6 +148,7 @@ class Destockage implements \JsonSerializable
             'createdAt' => $this->createdAt,
             'montant' => $this->montant,
             'produits' => $this->produits,
+            'sync' => $this->sync,
             'user' => $this->user?->jsonSerialize()
         ];
     }
