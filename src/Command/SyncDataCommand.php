@@ -54,7 +54,7 @@ class SyncDataCommand extends Command
             'achats' => $achats,
             'destockages' => $destockages
         ];
-        dd(json_encode($data));
+        //dd(json_encode($data));
 
         if ($factures || $achats || $destockages) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
