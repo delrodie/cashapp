@@ -47,7 +47,7 @@ class ApiSynchronisationController extends AbstractController
         $data = json_decode($jsonContent, true); //dd($jsonContent);
 
         $message=null;
-//        dd($data);
+        dd($data);
 
         if ($data['achats']) {
             foreach ($data['achats'] as $achatData) {
@@ -94,7 +94,7 @@ class ApiSynchronisationController extends AbstractController
         }
 
         // Traitement des destockages transmis
-        if ($data['destockages']){ dd($data['destockages']);
+        if ($data['destockages']){ //dd($data['destockages']);
             foreach ($data['destockages'] as $destockageData){
                 $destockage = $this->synchronisation->destockage($destockageData); //dd($destockage);
 
