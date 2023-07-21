@@ -4,6 +4,7 @@ namespace App\Repository\Main;
 
 use App\Entity\Main\Achat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -50,11 +51,27 @@ class AchatRepository extends ServiceEntityRepository
 
     public function getAchatNoSync()
     {
+        return $this->queryNoSync()->getQuery()->getResult();
+    }
+
+    public function getAchatNoSyncNext(int $achatCode)
+    {
+        return $this->queryNoSync()
+            ->andWhere('a.code > :code')
+            ->setParameter('code', $achatCode)
+            ->getQuery()->getResult()
+            ;
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    protected function queryNoSync(): QueryBuilder
+    {
         return $this->createQueryBuilder('a')
             ->addSelect('f')
             ->leftJoin('a.fournisseur', 'f')
             ->where('a.sync IS NULL')
-            ->getQuery()->getResult()
             ;
     }
 

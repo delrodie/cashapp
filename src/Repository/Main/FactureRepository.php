@@ -5,6 +5,7 @@ namespace App\Repository\Main;
 use App\Entity\Main\Facture;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Func;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -141,13 +142,28 @@ class FactureRepository extends ServiceEntityRepository
 
     public function getFactureNoSync()
     {
+            return $this->queryNoSync()->getQuery()->getResult();
+    }
+
+    public function getFactureNoSyncNext(int $factureCode)
+    {
+        return $this->queryNoSync()
+            ->andWhere('f.code > :code')
+            ->setParameter('code', $factureCode)
+            ->getQuery()->getResult();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    protected function queryNoSync(): QueryBuilder
+    {
         return $this->createQueryBuilder('f')
             ->addSelect('cl')
             ->addSelect('ca')
             ->leftJoin('f.client', 'cl')
             ->leftJoin('f.caisse', 'ca')
-            ->where('f.sync IS NULL')
-            ->getQuery()->getResult();
+            ->where('f.sync IS NULL');
     }
 
     public function getRecetteGlobalParJour()

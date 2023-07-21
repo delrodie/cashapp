@@ -54,9 +54,9 @@ class SyncDataCommand extends Command
             'achats' => $achats,
             'destockages' => $destockages
         ];
-//        dd(json_encode($data));
+        //dd(json_encode($data));
 
-        if ($factures || $achats || $destockages) {
+        if ($factures || $achats) {
             $cloud = $this->cloudRepository->findOneBy([], ['id' => "DESC"]); //dd($cloud);
             if (!$cloud) $url = "https://localhost:8000/api/sync/";
             else $url = "{$cloud->getUrl()}/api/sync/";
@@ -73,7 +73,7 @@ class SyncDataCommand extends Command
                             'destockages' => $destockages
                         ]
                     ]);
-//
+                    //dd($response);
                     // Si le statut du resultat est 100 alors la synchronisation est effective
                     // Sinon si le statut est 101 ainsi la facture existe dans la base de données distante
                     /// Sinon une erreur concernant un des produits de la facture a été rencontrée
