@@ -25,7 +25,7 @@ class Gestion
     {
     }
 
-    public function supFacture($facture): void
+    public function supFacture($facture): bool
     {
         $produits = $facture->getProduits() ?? [];
         if ($produits){
@@ -53,13 +53,15 @@ class Gestion
             $this->ajoutSynchro($facture, self::SUPPRESSION, 'FACTURE', $contenu);
         }
 
-        $this->factureRepository->remove($facture, true); dd('suppression');
+        $this->factureRepository->remove($facture, true);
         $this->entityManager->flush();
+
+        return true;
     }
 
-    public function ajoutSynchro(object $data, string $action, string $entite, array $contenu): void
+    public function ajoutSynchro(object $data, string $action, string $entite, array $contenu): bool
     {
-        $cloud = $this->cloudRepository->findOneBy([],['id'=>"DESC"]); dd($cloud);
+        $cloud = $this->cloudRepository->findOneBy([],['id'=>"DESC"]);
         if ($cloud->getUrl()){
             $synchro = new Synchro();
             $synchro->setCode($this->utilities->codeSynchro());
@@ -68,9 +70,10 @@ class Gestion
             $synchro->setReference($data->getCode());
             $synchro->setCreatedAt(new \DateTime());
             $synchro->setContent($contenu);
-            dd($synchro);
 
             $this->entityManager->persist($synchro);
         }
+
+        return true;
     }
 }
