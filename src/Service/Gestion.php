@@ -38,7 +38,6 @@ class Gestion
             }
         }
 
-        dd($deleteProduit);
         // Ajout de la facture à la table synchronisation si nous sommes en local
         if ($facture->isSync()){
             $contenu = [
@@ -59,7 +58,7 @@ class Gestion
     }
 
     public function ajoutSynchro(object $data, string $action, string $entite, array $contenu): void
-    {
+    { dd($data);
         $cloud = $this->cloudRepository->findOneBy([],['id'=>"DESC"]);
         if ($cloud->getUrl()){
             $synchro = new Synchro();
