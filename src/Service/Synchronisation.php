@@ -237,12 +237,11 @@ class Synchronisation
         $newSynchro->setCreatedAt(new \DateTime($synchroData['createdAt']['date']));
         $newSynchro->setSync(true);
         $newSynchro->setContent($synchroData['content']);
-        dd($newSynchro);
 
         switch ($synchroData['action']){
             case 'SUPPRESSION':
                 if ($synchroData['entite'] === 'FACTURE'){
-                    $facture = $this->factureRepository->findOneBy(['code' => $synchroData['reference']]);
+                    $facture = $this->factureRepository->findOneBy(['code' => $synchroData['reference']]); dd($facture);
                     if (!$facture) return 3;
 
                     $this->gestion->supFacture($facture);
