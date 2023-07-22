@@ -30,7 +30,7 @@ class Gestion
         $produits = $facture->getProduits() ?? [];
         if ($produits){
             foreach ($produits as $produit){
-                $deleteProduit = $this->produitRepository->findOneBy(['reference' => $produit['code']]); dd($deleteProduit);
+                $deleteProduit = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
                 if ($deleteProduit){
                     $deleteProduit->setStock((int)$deleteProduit->getStock() + (int)$produit['quantite']);
                     $this->entityManager->persist($deleteProduit);
@@ -38,7 +38,7 @@ class Gestion
             }
         }
 
-
+        dd($deleteProduit);
         // Ajout de la facture à la table synchronisation si nous sommes en local
         if ($facture->isSync()){
             $contenu = [
