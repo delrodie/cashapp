@@ -26,9 +26,9 @@ class Gestion
     }
 
     public function supFacture($facture): void
-    { dd($facture);
+    {
         $produits = $facture->getProduits() ?? [];
-        if ($produits){
+        if ($produits){ dd($produits);
             foreach ($produits as $produit){
                 $deleteProduit = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
                 if ($deleteProduit){
