@@ -28,9 +28,9 @@ class Gestion
     public function supFacture($facture): void
     {
         $produits = $facture->getProduits() ?? [];
-        if ($produits){ dd($produits);
+        if ($produits){
             foreach ($produits as $produit){
-                $deleteProduit = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
+                $deleteProduit = $this->produitRepository->findOneBy(['reference' => $produit['code']]); dd($deleteProduit);
                 if ($deleteProduit){
                     $deleteProduit->setStock((int)$deleteProduit->getStock() + (int)$produit['quantite']);
                     $this->entityManager->persist($deleteProduit);
