@@ -241,7 +241,7 @@ class Synchronisation
         switch ($synchroData['action']){
             case 'SUPPRESSION':
                 if ($synchroData['entite'] === 'FACTURE'){
-                    $facture = $this->factureRepository->findOneBy(['code' => $synchroData['reference']]); dd($facture);
+                    $facture = $this->factureRepository->findOneBy(['code' => $synchroData['reference']]);
                     if (!$facture) return 3;
 
                     $this->gestion->supFacture($facture);
