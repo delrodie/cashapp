@@ -48,7 +48,7 @@
                                 <div class="loader"></div>
                             </div>
                             <div class="table-responsive">
-                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap" style="width: 100%;">
                                     <thead>
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
@@ -73,7 +73,9 @@
                                     </tbody>
                                 </table>
                             </div>
-
+                            <div class="mt-5">
+                                {{ include('main/facture/_delete_facture.html.twig') }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -90,6 +92,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
     <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/select2.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/sweetalert2/sweetalert2.min.css')) }}">
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
@@ -97,6 +100,7 @@
     <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
     <script src="{{ absolute_url(asset('assets/vendor/js/select2.full.min.js')) }}"></script>
     <script src="{{ absolute_url(asset('assets/vendor/js/select2.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/sweetalert2/sweetalert2.all.min.js')) }}"></script>
     <script>
         $(document).ready(function() {
             var tableLoader = $('#table-loader');
@@ -120,15 +124,30 @@
             });
         });
     </script>
-    {#    <script>#}
-    {#        $('#listes').DataTable( {#}
-    {#            dom: 'Bfrtip',#}
-    {#            buttons: [#}
-    {#                'copy', 'excel', 'pdf'#}
-    {#            ]#}
-    {#        } );#}
-    {#    </script>#}
+
     <script>
         $(".select2").select2();
+    </script>
+    <script>
+        $(document).ready(function () {
+            console.log('ouvert')
+            $('#FactureDelete').submit(function (e) {
+                e.preventDefault()
+                Swal.fire({
+                    title: 'Voulez-vous vraiment supprimer la facture : ' + {{ facture.code }} + '?',
+                    text: "Une fois confirmée, vous ne pourrez plus recuperer la facture!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimer la!',
+                    cancelButtonText: "Annuler"
+                }).then((result) => {
+                    if (result.isConfirmed){
+                        e.target.submit();
+                    }
+                })
+            })
+        })
     </script>
 {% endblock %}

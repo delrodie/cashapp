@@ -1,0 +1,5 @@
+<form method="post" action="{{ path('app_main_facture_suppression', {'id': facture.id}) }}" id="FactureDelete">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ facture.id) }}">
+    <input type="hidden" name="_facture_id" value="{{ facture.id }}">
+    <button type="submit" class="btn btn-danger">Supprimer</button>
+</form>
