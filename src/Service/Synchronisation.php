@@ -225,7 +225,7 @@ class Synchronisation
     }
 
     public function synchro(mixed $synchroData): int
-    { dd($synchroData);
+    {
         $exist = $this->synchroRepository->findOneBy(['code'=>$synchroData['code']]);
         if ($exist) return 2;
 
@@ -237,6 +237,7 @@ class Synchronisation
         $newSynchro->setCreatedAt(new \DateTime($synchroData['createdAt']['date']));
         $newSynchro->setSync(true);
         $newSynchro->setContent($synchroData['content']);
+        dd($newSynchro);
 
         switch ($synchroData['action']){
             case 'SUPPRESSION':
