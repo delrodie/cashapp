@@ -60,7 +60,7 @@ class MultiSynchroCommand extends Command
 
         // Gestion des synchros ajoutées
         $synchros = $this->synchroRepository->getSynchroNoSync();
-        if ($synchros){ dd(json_encode(['synchro'=>$synchros], true));
+        if ($synchros){ //dd(json_encode(['synchro'=>$synchros], true));
             $this->gestionEntities($synchros, $input, $output, 'synchro', 'sync-synchro');
         }
 
