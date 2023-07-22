@@ -24,7 +24,7 @@ class ApiSynchroSyncController extends AbstractController
     {
         $jsonContent = $request->getContent();
         $data = json_decode($jsonContent, true); //dd($jsonContent);
-        dd($data);
+//        dd($data);
         // Traitement des achats transmis
         if ($data['synchro']) { //var_dump($data);
             foreach ($data['synchro'] as $synchroData) { //dd($synchroData);
