@@ -442,14 +442,44 @@
                             </li>
                         </ul>
                     </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link" href="{{ absolute_url(path('app_main_cloud_index')) }}" aria-expanded="false">
+
+                    {% endif %}
+                    {% if is_granted("ROLE_SUPER_ADMIN") %}
+                    <li class="sidebar-item">
+                        <a class="sidebar-link has-arrow" href="#" aria-expanded="false">
+                              <span class="d-flex">
+                                <i class="ti-settings"></i>
+                              </span>
+                            <span class="hide-menu">Gestion</span>
+                        </a>
+                        <ul aria-expanded="false" class="collapse first-level">
+                            <li class="sidebar-item">
+                                <a href="{{ absolute_url(path('app_main_gestion_synchro')) }}" class="sidebar-link">
+                                    <div class="round-16 d-flex align-items-center justify-content-center">
+                                        <i class="ti-angle-right"></i>
+                                    </div>
+                                    <span class="hide-menu">Synchro</span>
+                                </a>
+                            </li>
+                            <li class="sidebar-item">
+                                <a href="{{ absolute_url(path('app_main_gestion_facture')) }}" class="sidebar-link">
+                                    <div class="round-16 d-flex align-items-center justify-content-center">
+                                        <i class="ti-angle-right"></i>
+                                    </div>
+                                    <span class="hide-menu">Facture</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                            <li class="sidebar-item">
+                                <a class="sidebar-link" href="{{ absolute_url(path('app_main_cloud_index')) }}" aria-expanded="false">
                               <span>
                                 <i class="ti-cloud"></i>
                               </span>
-                                <span class="hide-menu">Cloud</span>
-                            </a>
-                        </li>
+                                    <span class="hide-menu">Cloud</span>
+                                </a>
+                            </li>
                     {% endif %}
                 </ul>
             </nav>

@@ -1,0 +1,121 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion de la liste des factures pas encore synchronisées{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion </h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Paramètres</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Gestion</a></li>
+                                <li class="breadcrumb-item" aria-current="page">factures</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-printer"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="table-loader" class="table-loader">
+                                <div class="loader"></div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap" style="width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center text-uppercase">#</th>
+                                        <th class="text-center text-uppercase">Reference</th>
+                                        <th class="text-center text-uppercase">Caisse</th>
+                                        <th class="text-center text-uppercase">Client</th>
+                                        <th class="text-center text-uppercase">Montant</th>
+                                        <th class="text-center text-uppercase">Remise</th>
+                                        <th class="text-center text-uppercase">Payer net</th>
+                                        <th class="text-center text-uppercase">Produits</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for facture in factures %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td class="text-center">{{ facture.code }}</td>
+                                            <td class="text-center">{{ facture.caisse ? facture.caisse.username : '' }}</td>
+                                            <td class="text-center">{{ facture.client ? facture.client.contact }}</td>
+                                            <td class="text-end">{{ facture.montant }}</td>
+                                            <td class="text-center">{{ facture.remise ? facture.remise : '' }}</td>
+                                            <td class="text-center">{{ facture.nap }}</td>
+                                            <td class="text-center">{{ facture.produits|length }}</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="8" class="text-center">Aucune facture trouvée</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/select2.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.full.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.min.js')) }}"></script>
+    <script>
+        $(document).ready(function() {
+            var tableLoader = $('#table-loader');
+            var table = $('#listes');
+
+            table.on('init.dt', function() {
+                tableLoader.find('.loader').hide();
+                table.show();
+            });
+
+            table.DataTable({
+                // Configurations du DataTable
+                dom: 'Bfrtip',
+                scrollX: true,
+                buttons: [
+                    'copy', 'excel', 'pdf'
+                ],
+                initComplete: function() {
+                    tableLoader.find('.loader').show();
+                    table.hide();
+                }
+            });
+        });
+    </script>
+    <script>
+        $(".select2").select2();
+    </script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des produits{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des etats</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Etats</a></li>
+                                <li class="breadcrumb-item" aria-current="page">produits</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-printer"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <button class="btn btn-primary" data-bs-toggle="modal"
+                                                data-bs-target="#primary-header-modal"><i class="ti-plus"></i> Ajouter</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div id="table-loader" class="table-loader">
+                                <div class="loader"></div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap" style="width: 100%;">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center text-uppercase">#</th>
+                                        <th class="text-center text-uppercase">Dates</th>
+                                        <th class="text-center text-uppercase">Codes</th>
+                                        <th class="text-center text-uppercase">Actions</th>
+                                        <th class="text-center text-uppercase">Entites</th>
+                                        <th class="text-center text-uppercase">Reference</th>
+                                        <th class="text-center text-uppercase">Etats</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for synchro in synchros %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td class="text-center">{{ synchro.createdAt|date('Y-m-d H:i:s') }}</td>
+                                            <td class="text-center"></td>
+                                            <td class="text-center">{{ synchro.action }}</td>
+                                            <td>{{ synchro.entite }}</td>
+                                            <td>{{ synchro.reference }}</td>
+                                            <td class="text-center">
+                                                {{ synchro.sync ? '<span class="badge bg-primary">OUI</span>' : '<span class="badge bg-danger">NON</span>' }}
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="5">no records found</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/select2.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.full.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.min.js')) }}"></script>
+    <script>
+        $(document).ready(function() {
+            var tableLoader = $('#table-loader');
+            var table = $('#listes');
+
+            table.on('init.dt', function() {
+                tableLoader.find('.loader').hide();
+                table.show();
+            });
+
+            table.DataTable({
+                // Configurations du DataTable
+                dom: 'Bfrtip',
+                scrollX: true,
+                buttons: [
+                    'copy', 'excel', 'pdf'
+                ],
+                initComplete: function() {
+                    tableLoader.find('.loader').show();
+                    table.hide();
+                }
+            });
+        });
+    </script>
+    <script>
+        $(".select2").select2();
+    </script>
+{% endblock %}
