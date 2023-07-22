@@ -52,7 +52,7 @@ class Gestion
             ];
             $this->ajoutSynchro($facture, self::SUPPRESSION, 'FACTURE', $contenu);
         }
-
+        dd('retour');
         $this->factureRepository->remove($facture, true);
         $this->entityManager->flush();
 
