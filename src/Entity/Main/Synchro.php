@@ -7,12 +7,15 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SynchroRepository::class)]
-class Synchro
+class Synchro implements \JsonSerializable
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $code = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $action = null;
@@ -23,6 +26,9 @@ class Synchro
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $reference = null;
 
+    #[ORM\Column(type: Types::ARRAY, nullable: true)]
+    private array $content = [];
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $createdAt = null;
 
@@ -32,6 +38,18 @@ class Synchro
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCode(): ?int
+    {
+        return $this->code;
+    }
+
+    public function setCode(?int $code): static
+    {
+        $this->code = $code;
+
+        return $this;
     }
 
     public function getAction(): ?string
@@ -70,6 +88,18 @@ class Synchro
         return $this;
     }
 
+    public function getContent(): array
+    {
+        return $this->content;
+    }
+
+    public function setContent(?array $content): static
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
     public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
@@ -93,4 +123,19 @@ class Synchro
 
         return $this;
     }
+
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'code' => $this->code,
+            'action' => $this->action,
+            'entite' => $this->entite,
+            'reference' => $this->reference,
+            'createdAt' => $this->createdAt,
+            'sync' => $this->sync,
+            'content' => $this->content,
+        ];
+    }
+
 }

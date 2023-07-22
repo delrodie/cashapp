@@ -8,6 +8,7 @@ use App\Entity\Main\Destockage;
 use App\Entity\Main\Facture;
 use App\Entity\Main\Fournisseur;
 use App\Entity\Main\Produit;
+use App\Entity\Main\Synchro;
 use App\Entity\Main\User;
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CategorieRepository;
@@ -16,6 +17,7 @@ use App\Repository\Main\DestockageRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
+use App\Repository\Main\SynchroRepository;
 use App\Repository\Main\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -26,7 +28,8 @@ class Synchronisation
         private UserRepository $userRepository, private FactureRepository $factureRepository,
         private ProduitRepository $produitRepository, private AchatRepository $achatRepository,
         private FournisseurRepository $fournisseurRepository, private Utilities $utilities,
-        private CategorieRepository $categorieRepository, private DestockageRepository $destockageRepository
+        private CategorieRepository $categorieRepository, private DestockageRepository $destockageRepository,
+        private SynchroRepository $synchroRepository, private Gestion $gestion
     )
     {
     }
@@ -220,4 +223,39 @@ class Synchronisation
         return 1;
 
     }
+
+    public function synchro(mixed $synchroData): int
+    {
+        $exist = $this->synchroRepository->findOneBy(['code'=>$synchroData['code']]);
+        if ($exist) return 2;
+
+        $newSynchro = new Synchro();
+        $newSynchro->setCode($synchroData['code']);
+        $newSynchro->setAction($synchroData['action']);
+        $newSynchro->setEntite($synchroData['entite']);
+        $newSynchro->setReference($synchroData['reference']);
+        $newSynchro->setCreatedAt(new \DateTime($synchroData['createdAt']['date']));
+        $newSynchro->setSync(true);
+        $newSynchro->setContent($synchroData['content']);
+
+        switch ($synchroData['action']){
+            case 'SUPPRESSION':
+                if ($synchroData['entite'] === 'FACTURE'){
+                    $facture = $this->factureRepository->findOneBy(['code' => $synchroData['reference']]);
+                    if (!$facture) return 3;
+
+                    $this->gestion->supFacture($facture);
+                }
+                break;
+
+            case 'MODIFICATION':
+                break;
+        }
+
+        $this->synchroRepository->save($newSynchro, true);
+
+        return 1;
+    }
+
+
 }

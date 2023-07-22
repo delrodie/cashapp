@@ -10,6 +10,7 @@ use App\Repository\Main\DomaineRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
 use App\Repository\Main\ProduitRepository;
+use App\Repository\Main\SynchroRepository;
 use App\Repository\Main\UserRepository;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
@@ -20,7 +21,7 @@ class Utilities
         private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
         private AchatRepository $achatRepository, private ClientRepository $clientRepository,
         private FactureRepository $factureRepository, private UserRepository $userRepository,
-        private DestockageRepository $destockageRepository
+        private DestockageRepository $destockageRepository, private SynchroRepository $synchroRepository
     )
     {
     }
@@ -95,6 +96,14 @@ class Utilities
         if (!$lastClient) return 1001;
 
         return $lastClient->getId() + 1001;
+    }
+
+    public function codeSynchro()
+    {
+        $lastSynchro = $this->synchroRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastSynchro) return 1001;
+
+        return $lastSynchro->getId() + 1001;
     }
 
     public function codeFacture()

@@ -19,7 +19,8 @@ class Gestion
         private EntityManagerInterface $entityManager,
         private FactureRepository $factureRepository,
         private ProduitRepository $produitRepository,
-        private CloudRepository $cloudRepository
+        private CloudRepository $cloudRepository,
+        private Utilities $utilities
     )
     {
     }
@@ -40,22 +41,34 @@ class Gestion
 
         // Ajout de la facture à la table synchronisation si nous sommes en local
         if ($facture->isSync()){
-            $this->ajoutSynchro($facture, self::SUPPRESSION, 'facture');
+            $contenu = [
+                'code' => $facture->getCode(),
+                'montant' => $facture->getMontant(),
+                'remise' => $facture->getRemise(),
+                'nap' => $facture->getNap(),
+                'verse' => $facture->getVerse(),
+                'monnaie' => $facture->getMonnaie(),
+                'produits' => $facture->getProduits(),
+                'createdAt' => $facture->getCreatedAt()
+            ];
+            $this->ajoutSynchro($facture, self::SUPPRESSION, 'FACTURE', $contenu);
         }
 
         $this->factureRepository->remove($facture, true);
         $this->entityManager->flush();
     }
 
-    public function ajoutSynchro(object $data, string $action, string $entite): void
+    public function ajoutSynchro(object $data, string $action, string $entite, array $contenu): void
     {
         $cloud = $this->cloudRepository->findOneBy([],['id'=>"DESC"]);
         if ($cloud->getUrl()){
             $synchro = new Synchro();
+            $synchro->setCode($this->utilities->codeSynchro());
             $synchro->setAction($action);
             $synchro->setEntite($entite);
             $synchro->setReference($data->getCode());
             $synchro->setCreatedAt(new \DateTime());
+            $synchro->setContent($contenu);
 
             $this->entityManager->persist($synchro);
         }

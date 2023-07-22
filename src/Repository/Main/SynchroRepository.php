@@ -39,6 +39,23 @@ class SynchroRepository extends ServiceEntityRepository
         }
     }
 
+    public function getSynchroNoSync()
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.sync IS NULL')
+            ->getQuery()->getResult();
+    }
+
+    public function getSynchroSyncNext(int $code)
+    {
+        return $this->createQueryBuilder('s')
+            ->where('s.sync IS NULL')
+            ->andWhere('s.code > :code')
+            ->setParameter('code', $code)
+            ->getQuery()->getResult();
+    }
+
+
 //    /**
 //     * @return Synchro[] Returns an array of Synchro objects
 //     */

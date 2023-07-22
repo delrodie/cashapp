@@ -9,39 +9,39 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/api/sync-achat')]
-class ApiAchatSyncController extends AbstractController
+#[Route('/api/sync-synchro')]
+class ApiSynchroSyncController extends AbstractController
 {
-    public const ACHAT_EXIST = 101;
-    public const CATEGORIE_NOT_EXIST = 102;
+    public const SYNCHRO_EXIST = 101;
+    public const ENTITE_NOT_EXIST = 102;
 
     public function __construct(private Synchronisation $synchronisation)
     {
     }
 
-    #[Route('/', name: 'api_sync_achat_index',methods: ['POST'])]
-    public function index(Request $request): JsonResponse
+    #[ROute('/', name: 'app_api_synchro_index', methods: ['POST'])]
+    public function index(Request $request)
     {
         $jsonContent = $request->getContent();
         $data = json_decode($jsonContent, true); //dd($jsonContent);
 
         // Traitement des achats transmis
-        if ($data['achat']) { //var_dump($data);
-            foreach ($data['achat'] as $achatData) { //dd($achatData);
-                $achat = $this->synchronisation->achat($achatData);
-                if ($achat === 2) {
+        if ($data['synchro']) { //var_dump($data);
+            foreach ($data['synchro'] as $synchroData) { //dd($synchroData);
+                $synchro = $this->synchronisation->synchro($synchroData);
+                if ($synchro === 2) {
                     $message = [
-                        'code' => $achatData['code'],
-                        'statut' => self::ACHAT_EXIST
+                        'code' => $synchroData['code'],
+                        'statut' => self::SYNCHRO_EXIST
                     ];
 
                     return new JsonResponse($message, Response::HTTP_OK);
                 }
 
-                if ($achat === 3) {
+                if ($synchro === 3) {
                     $message = [
-                        'statut' => self::CATEGORIE_NOT_EXIST,
-                        'code' => $achatData['code']
+                        'statut' => self::ENTITE_NOT_EXIST,
+                        'code' => $synchroData['code']
                     ];
 
                     return new JsonResponse($message, Response::HTTP_OK);
@@ -53,7 +53,5 @@ class ApiAchatSyncController extends AbstractController
         }
 
         return new JsonResponse($message, Response::HTTP_CREATED);
-
     }
-
 }

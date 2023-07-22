@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Repository\Main\AchatRepository;
 use App\Repository\Main\CloudRepository;
 use App\Repository\Main\FactureRepository;
+use App\Repository\Main\SynchroRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -27,6 +28,7 @@ class MultiSynchroCommand extends Command
         private FactureRepository $factureRepository,
         private CloudRepository $cloudRepository,
         private AchatRepository $achatRepository,
+        private SynchroRepository $synchroRepository
     )
     {
         parent::__construct();
@@ -56,7 +58,13 @@ class MultiSynchroCommand extends Command
             $this->gestionEntities($factures, $input, $output, 'facture', 'sync-facture');
         }
 
-        if (!$factures && !$achats){
+        // Gestion des synchros ajoutées
+        $synchros = $this->synchroRepository->getSynchroNoSync();
+        if ($synchros){ //dd(json_encode(['synchro'=>$synchros], true));
+            $this->gestionEntities($synchros, $input, $output, 'synchro', 'sync-synchro');
+        }
+
+        if (!$factures && !$achats && !$synchros){
             $io->info("La base de données distante est à jour!");
         }
 
@@ -96,9 +104,9 @@ class MultiSynchroCommand extends Command
 
                         $this->entityManager->flush();
 
-                        $io->success("Synchronisation de la facture a été effectuée avec succès!");
+                        $io->success("Synchronisation de {$dataType} a été effectuée avec succès!");
                     }else{
-                        $io->info("Aucune facture à synchroniser.");
+                        $io->info("Aucun(e) {$dataType} à synchroniser.");
                     }
                     break;
 
@@ -113,6 +121,9 @@ class MultiSynchroCommand extends Command
                                 break;
                             case 'facture':
                                 $updateItem = $this->factureRepository->findOneBy(['code' => $code]);
+                                break;
+                            case 'synchro':
+                                $updateItem = $this->synchroRepository->findOneBy(['code' => $code]);
                         }
 
                         if ($updateItem){
@@ -120,12 +131,12 @@ class MultiSynchroCommand extends Command
                             $this->entityManager->persist($updateItem);
                             $this->entityManager->flush();
 
-                            $io->warning("L'erreur concernant la facture {$updateItem->getCode()} a été résolue avec succès! La synchronisation va reprendre dans quelques instant");
+                            $io->warning("L'erreur concernant {$dataType} {$updateItem->getCode()} a été résolue avec succès! La synchronisation va reprendre dans quelques instant");
 
                         }
 
                     }elseif($statut === 102){
-                        $io->error("Echec! Un des produits concernés par la facture n'a pas été trouvé dans la base de données distante");
+                        $io->error("Echec! Un des elements concernés par {$dataType} n'a pas été trouvé dans la base de données distante");
 
                         // Envoi de mail au developpeur
                         // Continuer la synchronisation
@@ -142,6 +153,10 @@ class MultiSynchroCommand extends Command
                             break;
                         case 'facture':
                             $data = $this->factureRepository->getFactureNoSyncNext($code);
+                            break;
+                        case 'synchro':
+                            $data = $this->synchroRepository->getSynchroSyncNext($code);
+                            break;
                     }
                     if (!$data) {
                         break;
