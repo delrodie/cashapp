@@ -62,7 +62,7 @@ class Gestion
     public function ajoutSynchro(object $data, string $action, string $entite, array $contenu): bool
     {
         $cloud = $this->cloudRepository->findOneBy([],['id'=>"DESC"]);
-        if ($cloud->getUrl()){
+        if ($cloud){
             $synchro = new Synchro();
             $synchro->setCode($this->utilities->codeSynchro());
             $synchro->setAction($action);
