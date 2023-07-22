@@ -26,7 +26,7 @@ class Gestion
     }
 
     public function supFacture($facture): void
-    {
+    { dd($facture);
         $produits = $facture->getProduits() ?? [];
         if ($produits){
             foreach ($produits as $produit){
