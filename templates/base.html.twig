@@ -442,6 +442,14 @@
                             </li>
                         </ul>
                     </li>
+                        <li class="sidebar-item">
+                            <a class="sidebar-link" href="{{ absolute_url(path('app_main_admin_facture_index')) }}" aria-expanded="false">
+                              <span>
+                                <i class="ti-file"></i>
+                              </span>
+                                <span class="hide-menu">Factures</span>
+                            </a>
+                        </li>
 
                     {% endif %}
                     {% if is_granted("ROLE_SUPER_ADMIN") %}
