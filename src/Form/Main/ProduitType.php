@@ -19,7 +19,7 @@ class ProduitType extends AbstractType
     {
         $builder
 //            ->add('reference')
-            ->add('codebarre', NumberType::class,[
+            ->add('codebarre', TextType::class,[
                 'attr'=>['class'=>'form-control', 'autocomplete'=>"off"],
                 'required' => false
             ])

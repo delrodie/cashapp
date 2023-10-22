@@ -61,6 +61,7 @@ class ProduitController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            dd($produit);
             $produitRepository->save($produit, true);
 
             return $this->redirectToRoute('app_main_produit_index', [], Response::HTTP_SEE_OTHER);

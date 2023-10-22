@@ -75,6 +75,16 @@ class ApiFactureController extends AbstractController
             $entity = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
             if (!$entity) return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
 
+            $requestQte = (int) $produit['quantite'];
+            $stock = (int) $entity->getStock();
+
+            if ($requestQte > $stock){
+                return new JsonResponse([
+                    'message' => "La quantité en stock du poduit {$entity->getLibelle()} est inférieure à la quantité en vente",
+                    'statut' => false
+                ], Response::HTTP_OK);
+            }
+
             $entity->setStock((int)$entity->getStock() - (int)$produit['quantite']);
             $this->entityManager->persist($entity);
         }

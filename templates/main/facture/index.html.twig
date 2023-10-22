@@ -535,30 +535,35 @@
                     contentType: 'application/json',
                     success: function (response) {
                         if (response){
-                            // Rediriger vers l'url de l'edition de la facture avec l'id de la facture
-                            var factureId = response;
-                            var url = "{{ absolute_url(path('app_main_facture_print')) }}" + "?client=" + factureId;
+                            if (response.statut === false){
+                                alert(response.message)
+                            }else{
+                                // Rediriger vers l'url de l'edition de la facture avec l'id de la facture
+                                var factureId = response;
+                                var url = "{{ absolute_url(path('app_main_facture_print')) }}" + "?client=" + factureId;
 
-                            // Réinitialiser les champs du formulaire
-                            $('#productCode').val('');
-                            $('#productQuantite').val('');
-                            $('#productPrixvente').val('');
-                            $('#productPrixventeDisplay').val('');
-                            $('#numeroClient').val('');
-                            $('input[name="remise"]').val('');
-                            $('input[name="netAPayer"]').val('');
-                            $('#montantVerse').val('');
-                            $('input[name="monnaie"]').val('');
+                                // Réinitialiser les champs du formulaire
+                                $('#productCode').val('');
+                                $('#productQuantite').val('');
+                                $('#productPrixvente').val('');
+                                $('#productPrixventeDisplay').val('');
+                                $('#numeroClient').val('');
+                                $('input[name="remise"]').val('');
+                                $('input[name="netAPayer"]').val('');
+                                $('#montantVerse').val('');
+                                $('input[name="monnaie"]').val('');
 
-                            // Vider le tableau de produits
-                            $("#productTable tbody").empty();
-                            $('#totalMontant').text('0');
-                            $('#montantTotal').text('0');
+                                // Vider le tableau de produits
+                                $("#productTable tbody").empty();
+                                $('#totalMontant').text('0');
+                                $('#montantTotal').text('0');
 
-                            // Supprimer les données enregistrées en mémoire
-                            localStorage.removeItem('tableData');
+                                // Supprimer les données enregistrées en mémoire
+                                localStorage.removeItem('tableData');
 
-                            window.open(url, '_blank');
+                                window.open(url, '_blank');
+                            }
+
 
                             location.reload()
                         }
