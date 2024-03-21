@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des achats{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Gestion des achats</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Approvisionnements</a></li>
+                                <li class="breadcrumb-item" aria-current="page">achats</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-truck"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
+                                <div class="col">
+                                    <div class="action">
+                                        <a href="{{ absolute_url(path('app_main_achat_new')) }}" class="btn btn-primary">Ajouter</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
+                                    <thead>
+                                    <tr>
+                                        <th class="text-center text-uppercase">Reference</th>
+                                        <th class="text-center text-uppercase">Produit</th>
+                                        <th class="text-center text-uppercase">Prix</th>
+                                        <th class="text-center text-uppercase">Stock Virtuel</th>
+                                        <th class="text-center text-uppercase">Stock physique</th>
+                                        <th class="text-center text-uppercase">Différence</th>
+                                        <th class="text-center text-uppercase">Pertes</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for inventaire in inventaires %}
+                                        {% for produit in inventaire.produits %}
+                                            <tr>
+                                                <td class="text-center">{{ produit.code }}</td>
+                                                <td>{{ produit.libelle }}</td>
+                                                <td class="text-center">{{ produit.vente }}</td>
+                                                <td class="text-center">{{ produit.stock }}</td>
+                                                <td class="text-center">{{ produit.quantite }}</td>
+                                                <td class="text-center">
+                                                    {{ produit.equart == 0 ? produit.equart  : produit.equart * (-1) }}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{ produit.equart > 0 ? produit.equart * produit.vente : 0 }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}                                       
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="6">Aucun inventaire enregistré</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script>
+        $('#listes').DataTable( {
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ]
+        } );
+    </script>
+{% endblock %}
