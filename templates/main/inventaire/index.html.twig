@@ -1,0 +1,391 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Gestion liste des inventaires {% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-3">
+                        <div class="text-end mb-n5">
+                            <span class="head-icon"><i class="ti-desktop"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-9 text-center">
+                        <span class="montantTotal" id="montantTotal">0</span> FCFA
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        {#                        <div class="card-header">#}
+                        {#                            <div class="row">#}
+                        {#                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Formulaire</h5></div>#}
+                        {#                                <div class="col">#}
+                        {#                                    <div class="action">#}
+                        {#                                        <a href="{{ path('app_main_facture_index') }}" class="btn btn-primary">Retour à la liste</a>#}
+                        {#                                    </div>#}
+                        {#                                </div>#}
+                        {#                            </div>#}
+
+                        {#                        </div>#}
+                        <div class="card-body">
+                            <div class="row mt-3">
+                                <div class="col-8 productList">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Liste des produits</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table" id="productTable">
+                                                <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Codes</th>
+                                                    <th>Produits</th>
+                                                    <th>Stock</th>
+                                                    <th>Quantité</th>
+                                                    <th>Equart</th>
+                                                    <th>Vente</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Formulaire</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <form id="productForm">
+                                                <div class="row row-cols-1 g-4">
+                                                    <div class="col mt-3">
+                                                        <label for="">Produit</label>
+                                                        <input type="text" name="code" class="form-control" id="productCode" accesskey="A" tabindex="1" autofocus autocomplete="off">
+                                                    </div>
+                                                    <div class="col mt-3">
+                                                        <label for="">Quanité</label>
+                                                        <input type="number" name="quantite" class="form-control" id="productQuantite" tabindex="0" autocomplete="off">
+                                                    </div>
+                                                    <span id="productPrixventeDisplay"></span>
+                                                    <div class="col mt-3 d-grid gap-2">
+                                                        <input type="hidden" name="productMontant" id="productMontant" value="">
+                                                        <input type="hidden" name="productId" id="productId" value="">
+                                                        <input type="hidden" name="prixVente" id="productPrixvente" value="">
+                                                        <input type="hidden" name="productStock" id="productStock" value="">
+                                                        <input type="hidden" name="productCode" id="productCode" value="">
+                                                        <input type="hidden" name="productLibelle" id="productLibelle" value="">
+                                                        <button id="add-product-button" class="btn btn-outline-primary btn-sm">Ajouter un produit</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <form id="inventaireForm">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="col-8 mt-3">
+                                            <span class="info-client" id="infoClient"></span>
+                                        </div>
+                                        <div class="col-4 mt-3">
+                                            <label for="">Date</label>
+                                            <input type="date" name="dateInventaire" id="dateinventaire" class="form-control" autocomplete="off" required>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-4 offset-4 mt-5 d-grid gap-2">
+                                            <button class="btn btn-primary btn-lg" id="saveButton">Valider</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/prism.min.css')) }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.css')) }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.min.css">
+    <style>
+        .bg-red {background-color: #d8b7b7; }
+        .bg-yellow {background-color: #e1e1be;}
+    </style>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ absolute_url(asset('assets/vendor/jquery-ui/jquery-ui.min.js')) }}"></script>
+
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            // Vérifions s'il existe des données enregistrées localement et les récupérer
+            var savedData = localStorage.getItem('inventaireTableData');
+            if (savedData) {
+                $('#productTable tbody').html(savedData);
+            }
+
+            // Écouteur d'événement pour la saisie du code-barres ou de la référence
+            $('#productCode').on('input', function() {
+                var code = $(this).val(); // Récupérer la valeur saisie
+
+                // Effectuer une requête AJAX pour obtenir les suggestions de produits
+                $.ajax({
+                    url: '{{ path('app_api_inventaire_produits') }}',
+                    method: 'GET',
+                    data: { query: code },
+                    success: function(response) {
+                        // Mettre à jour le champ de formulaire avec les informations du produit
+                        if (response.length > 0) {
+                            var product = response[0];
+                            $('#productId').val(product.produitId);
+                            $('#productLibelle').val(product.libelle);
+                            $('#productPrixvente').val(product.prixVente);
+                            $('#productStock').val(product.stock);
+                            $('#productCode').val(product.code);
+                            $('#productPrixventeDisplay').text('PV : ' + product.libelle + ' - ' + product.prixVente + 'FCFA');
+                            console.log(product)
+
+                            // addProduitToTable();
+                        } else {
+                            // Réinitialiser les champs de formulaire si aucun produit trouvé
+                            $('#productId').val('');
+                            $('#productPrixvente').val('');
+                            $('#productStock').val('');
+                            $('#productPrixventeDisplay').text('');
+                        }
+                    }
+                });
+            });
+
+            $('#add-product-button').on('click', function (e) {
+                e.preventDefault(); // Empêcher le comportement par défaut du bouton
+
+                // Récupérer les valeurs des champs du formulaire
+                var code = $('#productCode').val();
+                var quantite = $('#productQuantite').val();
+                var prixVente = $('#productPrixvente').val();
+                var libelle = $('#productLibelle').val();
+                var stock = $('#productStock').val();
+
+                // Verification de l'existence du produit dans le tableau
+                var existingProduct = false;
+                $('#productTable tbody tr').each(function () {
+                    if ($(this).find('td:eq(1)').text() === code) {
+                        existingProduct = true;
+                        return false; // Sortir de la boucle each dès qu'un produit correspondant est trouvé
+                    }
+                });
+
+                // Si le produit existe déjà, afficher un message ou empêcher l'ajout
+                if (existingProduct) {
+                    // alert('Ce produit a déjà été ajouté');
+                    Swal.fire({
+                        title: "Echèc",
+                        text: "Ce produit a déjà été ajouté",
+                        icon: "error"
+                    });
+                    reinitialisation()
+                    return; // Sortir de la fonction sans ajouter la nouvelle ligne ni réinitialiser les champs
+                }
+
+                if (code === '' || quantite === '' || libelle === '' || stock === '' || prixVente === '') {
+                    // Afficher un message d'erreur ou une notification à l'utilisateur
+                    Swal.fire({
+                        title: "Attention!",
+                        text: "Veuillez remplir tous les champs du formulaire",
+                        icon: "warning"
+                    });
+                    return; // Sortir de la fonction sans ajouter la nouvelle ligne ni réinitialiser les champs
+                }
+
+                var equart = stock - quantite;
+
+                console.log(libelle)
+
+                function getColorClass(equart) {
+                    if (equart > 0) {
+                        return 'bg-red';
+                    } else if (equart < 0) {
+                        return 'bg-yellow';
+                    } else {
+                        return '';
+                    }
+                }
+
+                // Construire la nouvelle ligne du tableau
+                var newRow = '<tr class="' + getColorClass(equart) + '">' +
+                    '<td>#</td>' +
+                    '<td>' + code + '</td>' +
+                    '<td>' + libelle + '</td>' +
+                    '<td>' + stock + '</td>' +
+                    '<td>' + quantite + '</td>' +
+                    '<td>' + equart + '</td>' +
+                    '<td>' + prixVente + '</td>' +
+                    '<td><button class="btn btn-sm btn-danger delete-product-button"><i class="ti-trash"></i></button></td>' +
+                '</tr>';
+
+                // Ajout de la nouvelle ligne au tableau
+                $('#productTable tbody').append(newRow);
+
+
+                // Enregistrement des données localement
+                localStorage.setItem('productTableData', $('#productTable tbody').html());
+
+                // Réinitialisation des valeurs des champs du formulaire
+                reinitialisation()
+            });
+
+            // Gestionnaire d'événements pour supprimer une ligne du tableau
+            $(document).on('click', '.delete-product-button', function() {
+                $(this).closest('tr').remove(); // Supprimer la ligne parente de celui sur lequel le bouton a été cliqué
+
+                // Enregistrer les données mises à jour localement
+                localStorage.setItem('productTableData', $('#productTable tbody').html());
+            });
+
+            function reinitialisation(){
+                $('#productCode').val('');
+                $('#productQuantite').val('');
+                $('#productPrixvente').val('');
+                $('#productLibelle').val('');
+                $('#productStock').val('');
+                $('#productPrixventeDisplay').text('');
+            }
+
+
+            /** SOUMISSION DU FORMULAIRE **/
+            // Fonction pour verifier si la date d'inventaire est renseignée
+            function isDateInventaireFilled() {
+                var dateInventaire = $('#dateinventaire').val();
+                return dateInventaire !== ''; // Renvoie vrai si la date est renseignée, sinon faux
+            }
+
+            // Gestionnaire d'événements pour le bouton de sauvegarde
+            $('#saveButton').on('click', function (e) {
+                // Vérifier si la date d'inventaire est renseignée
+                if (!isDateInventaireFilled()) {
+                    // Afficher un message d'erreur ou une notification à l'utilisateur
+                    Swal.fire({
+                        title: "Attention!",
+                        text: "Veuillez renseigner la date d'inventaire",
+                        icon: "warning"
+                    }).then(function() {
+                        // Mettre le focus sur le champ de la date
+                        $('#dateinventaire').focus();
+                    });
+                    var saveButton = document.getElementById('saveButton');
+                    saveButton.classList.remove('button-processing');
+                    saveButton.innerHTML = "Valider";
+                    e.preventDefault(); // Empêcher l'action par défaut du bouton
+                }
+            });
+
+            $('#inventaireForm').on('submit', function (e) {
+                e.preventDefault();
+
+                var dateInventaire = $('input[name="dateInventaire"]').val(); // Recuepration de la valeur du champ date inventaire
+
+                var productRows = $('#productTable tbody tr');
+                var products = [];
+
+                productRows.each(function(index){
+                    var row = $(this);
+                    var code = row.find('td:eq(1)').text();
+                    var libelle = row.find('td:eq(2)').text();
+                    var stock = row.find('td:eq(3)').text();
+                    var quantite = row.find('td:eq(4)').text();
+                    var equart = row.find('td:eq(5)').text();
+                    var vente = row.find('td:eq(6)').text();
+
+                    // Create an object for each product
+                    var produit = {
+                        code: parseInt(code),
+                        libelle: libelle,
+                        stock: parseInt(stock),
+                        quantite: parseInt(quantite),
+                        equart: parseInt(equart),
+                        vente: parseInt(vente)
+                    };
+
+                    // Add the product object to the produits array
+                    products.push(produit);
+                });
+
+                var inventaire = {
+                    date: dateInventaire,
+                    produits: products
+                }
+
+                console.log(JSON.stringify( inventaire));
+
+                // Envoie de l'objet Inventaire à l'API pour enregistrement
+                $.ajax({
+                    url: "{{ absolute_url(path('app_api_inventaire_create')) }}",
+                    method: 'POST',
+                    data: JSON.stringify(inventaire),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log('normalement la reponse doit être après cette phrase')
+                        console.log(response)
+                        if (response) {
+                            if (response.statut === false) {
+                                Swal.fire({
+                                    title: "Attention!",
+                                    text: response.message,
+                                    icon: "warning"
+                                })
+                            }else{
+                                var date = response.date;
+                                var url = "{{ absolute_url(path('app_main_inventaire_index')) }}" + "?date=" + date;
+
+                                reinitialisation();
+                                $('input[name="dateInventaire"]').val();
+                                $('#productTable tbody').empty();
+
+                                localStorage.removeItem('inventaireTableData');
+
+                                window.open(url);
+                            }
+                        }
+                        else{
+                            // Afficher un message d'erreur ou une notification à l'utilisateur
+                            Swal.fire({
+                                title: "Oups!",
+                                text: "Une erreur s'est produite!",
+                                icon: "error"
+                            });
+                            var saveButton = document.getElementById('saveButton');
+                            saveButton.classList.remove('button-processing');
+                            saveButton.innerHTML = "Valider";
+                        }
+                    }
+                })
+            })
+            
+        })
+    </script>
+{% endblock %}

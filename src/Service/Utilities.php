@@ -9,6 +9,7 @@ use App\Repository\Main\DestockageRepository;
 use App\Repository\Main\DomaineRepository;
 use App\Repository\Main\FactureRepository;
 use App\Repository\Main\FournisseurRepository;
+use App\Repository\Main\InventaireRepository;
 use App\Repository\Main\ProduitRepository;
 use App\Repository\Main\SynchroRepository;
 use App\Repository\Main\UserRepository;
@@ -21,7 +22,8 @@ class Utilities
         private ProduitRepository $produitRepository, private FournisseurRepository $fournisseurRepository,
         private AchatRepository $achatRepository, private ClientRepository $clientRepository,
         private FactureRepository $factureRepository, private UserRepository $userRepository,
-        private DestockageRepository $destockageRepository, private SynchroRepository $synchroRepository
+        private DestockageRepository $destockageRepository, private SynchroRepository $synchroRepository,
+        private InventaireRepository $inventaireRepository
     )
     {
     }
@@ -171,6 +173,34 @@ class Utilities
         }
 
         return $suggestions;
+    }
+
+    public function produitQueryBy($query): array
+    {
+        $produits = $this->produitRepository->findByCodeOrReference($query);
+
+        // Création du tableau de suggestion au format Json
+        $suggestions=[];
+        foreach ($produits as $produit){
+            $suggestions[] = [
+                'produitId' => $produit->getId(),
+                'libelle' => $produit->getLibelle(),
+                'prixVente' => $produit->getPrixVente(),
+                'code' => $produit->getReference(),
+                'codebarre' => $produit->getCodebarre(),
+                'stock' => $produit->getStock(),
+            ];
+        }
+
+        return $suggestions;
+    }
+
+    public function codeInventaire()
+    {
+        $lastInventaire = $this->inventaireRepository->findOneBy([],['id'=>"DESC"]);
+        if (!$lastInventaire) return 1001;
+
+        return $lastInventaire->getId() + 1001;
     }
 
     /**
