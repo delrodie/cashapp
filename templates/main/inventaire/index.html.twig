@@ -181,6 +181,9 @@
                 });
             });
 
+            // Variable pour garder une trace du numéro d'ordre
+            var orderNumber = 1;
+
             $('#add-product-button').on('click', function (e) {
                 e.preventDefault(); // Empêcher le comportement par défaut du bouton
 
@@ -238,7 +241,7 @@
 
                 // Construire la nouvelle ligne du tableau
                 var newRow = '<tr class="' + getColorClass(equart) + '">' +
-                    '<td>#</td>' +
+                    '<td></td>' +
                     '<td>' + code + '</td>' +
                     '<td>' + libelle + '</td>' +
                     '<td>' + stock + '</td>' +
@@ -251,6 +254,8 @@
                 // Ajout de la nouvelle ligne au tableau
                 $('#productTable tbody').append(newRow);
 
+                orderNumber++;
+
 
                 // Enregistrement des données localement
                 localStorage.setItem('productTableData', $('#productTable tbody').html());
@@ -259,6 +264,7 @@
                 reinitialisation()
 
                 $('#productCode').focus();
+                sortTableRows();
             });
 
             // Gestionnaire d'événements pour supprimer une ligne du tableau
@@ -387,6 +393,19 @@
                     }
                 })
             })
+
+            function sortTableRows() {
+                var rows = $('#productTable tbody tr').get(); // Récupérer toutes les lignes du tableau
+                rows.sort(function(rowA, rowB) {
+                    // Comparer les index des lignes pour les trier par ordre décroissant
+                    return $(rowB).index() - $(rowA).index();
+                });
+                // Mettre à jour le contenu du tableau avec les lignes triées
+                $('#productTable tbody').empty().append(rows);
+            }
+
+            // Appel de la fonction pour trier les lignes du tableau au chargement de la page
+
             
         })
     </script>
@@ -433,5 +452,28 @@
             });
 
         })
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Écouteur d'événements pour la pression de la touche Tab dans le champ #productCode
+            $('#productCode').on('keydown', function (e) {
+                // Vérifier si la touche pressée est la touche Tab (code 9)
+                if (e.keyCode === 9) {
+                    e.preventDefault(); // Empêcher le comportement par défaut de la touche Tab
+
+                    // Envoyer le focus au champ #productQuantite
+                    $('#productQuantite').focus();
+                }
+            });
+        });
+        $('#productCode').on('input', function () {
+            var code = $(this).val(); // Récupérer la valeur saisie dans #productCode
+
+            // Vérifier si le nombre de caractères est égal à 8
+            if (code.length === 8) {
+                // Envoyer automatiquement le focus au champ #productQuantite
+                $('#productQuantite').focus();
+            }
+        });
     </script>
 {% endblock %}
