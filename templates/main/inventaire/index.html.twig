@@ -368,7 +368,7 @@
 
                                 localStorage.removeItem('inventaireTableData');
 
-                                window.open(url);
+                                window.location.href = url
                             }
                         }
                         else{
@@ -386,6 +386,50 @@
                 })
             })
             
+        })
+    </script>
+    <script>
+        $(document).ready(function () {
+            // Fonction pour sauvegarder les données dans le stockage local
+            function saveDataToLocalStorage(data) {
+                localStorage.setItem('productTableData', data);
+            }
+
+// Fonction pour récupérer les données à partir du stockage local
+            function getDataFromLocalStorage() {
+                return localStorage.getItem('productTableData');
+            }
+
+// Fonction pour restaurer les données du tableau à partir du stockage local
+            function restoreTableFromLocalStorage() {
+                var savedData = getDataFromLocalStorage();
+                if (savedData) {
+                    $('#productTable tbody').html(savedData);
+                }
+            }
+
+// Fonction pour effacer les données du stockage local
+            function clearLocalStorage() {
+                localStorage.removeItem('productTableData');
+            }
+
+// Appel de la fonction pour restaurer les données du tableau au chargement de la page
+            $(document).ready(function() {
+                restoreTableFromLocalStorage();
+            });
+
+// Appel de la fonction pour sauvegarder les données lorsque le tableau est modifié
+            $(document).on('click', '#add-product-button, .delete-product-button', function() {
+                var tableData = $('#productTable tbody').html();
+                saveDataToLocalStorage(tableData);
+            });
+
+// Gestionnaire d'événements pour la soumission du formulaire d'inventaire
+            $('#inventaireForm').on('submit', function(e) {
+                // Effacer les données du stockage local lors de la soumission du formulaire
+                clearLocalStorage();
+            });
+
         })
     </script>
 {% endblock %}
