@@ -12,6 +12,8 @@ use Omines\DataTablesBundle\DataTableFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Omines\DataTablesBundle\Column\TwigColumn;
+use Doctrine\ORM\QueryBuilder;
 
 #[Route('/admin/facture')]
 class AdminFactureController extends AbstractController
@@ -25,16 +27,27 @@ class AdminFactureController extends AbstractController
     #[Route('/', name:'app_main_admin_facture_index')]
     public function index(Request $request, DataTableFactory $dataTableFactory)
     {
-        $table = $dataTableFactory->create()
-            ->add('createdAt', DateTimeColumn::class, ['label' => 'Date', 'format' => 'Y-m-d H:i:s', 'searchable' => true])
-            ->add('code', TextColumn::class, ['label' => 'Code', 'searchable' => true])
-            ->add('montant', NumberColumn::class, ['label' => 'Montant'])
-            ->add('nap', NumberColumn::class, ['label' => 'NAP'])
-            ->add('verse', NumberColumn::class, ['label' => 'Versés'])
+        $table = $dataTableFactory->create(['searching' => true])
+            ->add('createdAt', DateTimeColumn::class, ['label' => 'Date', 'format' => 'd-m-Y H:i', 'searchable' => false,'orderable' => true ])
+            ->add('code', TextColumn::class, ['label' => 'Code', 'searchable' => true, 'globalSearchable' => true,])
+            ->add('montant', NumberColumn::class, ['label' => 'Montant', 'searchable' => true])
+            ->add('remise', NumberColumn::class, ['label' => 'Remise', 'searchable' => true])
+            ->add('nap', NumberColumn::class, ['label' => 'NAP', 'searchable' => true])
+            ->add('verse', NumberColumn::class, ['label' => 'Versé', 'searchable' => true])
+            ->add('monnaie', NumberColumn::class, ['label' => 'Monnaie', 'searchable' => true])
+            ->add('actions', TwigColumn::class, [
+                'label' => 'Actions',
+                'template' => 'main/facture/_actions.html.twig',
+            ])
             ->createAdapter(ORMAdapter::class, [
                 'entity' => Facture::class,
+                'query' => function (QueryBuilder $builder) {
+                    $builder
+                        ->select('f')
+                        ->from(Facture::class, 'f');
+                },
             ])
-            ->handleRequest($request);
+                        ->handleRequest($request);
 
         if ($table->isCallback()) {
             return $table->getResponse();

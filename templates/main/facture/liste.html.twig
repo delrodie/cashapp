@@ -39,7 +39,7 @@
                         </div>
                         <div class="card-body">
                             {#<div class="table-responsive">
-                                <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
+                                <table id="###listes" class="table  border table-striped table-bordered display text-nowrap">
                                     <thead>
                                     <tr>
                                         <th class="text-center text-uppercase">#</th>
@@ -113,7 +113,17 @@
     <script>
         $(function() {
             // Initialisation automatique via le bundle
-            $('#factures-list').initDataTables({{ datatable_settings(datatable) }});
+            $//('#factures-list').initDataTables({{ datatable_settings(datatable) }});
+            $('#factures-list').initDataTables({{ datatable_settings(datatable) }}, {
+                searching: true, // Active la barre de recherche globale
+                dom: 'Bfrtip',   // Réactive la structure avec boutons 
+                buttons: [
+                    'copy', 'excel', 'pdf'
+                ],
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.10.24/i18n/French.json" // Pour avoir l'interface en français
+                }
+            });
         });
     </script>
 {% endblock %}
