@@ -48,6 +48,14 @@ class ClientRepository extends ServiceEntityRepository
             ;
     }
 
+    public function findByFacture()
+    {
+        return $this->createQueryBuilder('c')
+            ->addSelect('f')
+            ->join('c.factures', 'f')
+            ->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Client[] Returns an array of Client objects
 //     */
