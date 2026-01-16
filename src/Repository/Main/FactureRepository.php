@@ -182,6 +182,18 @@ class FactureRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
+    public function getProduitsVendus($searchQuery)
+    {
+        return $this->createQueryBuilder('f')
+            ->addSelect('c')
+            ->leftJoin('f.caisse', 'c')
+            ->where('f.produits LIKE :term')
+            ->setParameter('term', '%' . $searchQuery . '%')
+            ->orderBy('f.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Facture[] Returns an array of Facture objects
 //     */

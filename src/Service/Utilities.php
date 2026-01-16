@@ -212,4 +212,28 @@ class Utilities
     {
         return (new AsciiSlugger())->slug(strtolower($string));
     }
+
+    public function findProduitsVendus($searchQuery)
+    {
+        $factures = $this->factureRepository->getProduitsVendus($searchQuery);
+        $resultats = [];
+
+        foreach ($factures as $facture) {
+            foreach ($facture->getProduits() as $produit) {
+                // On vérifie si le nom du produit contient la recherche
+                if (stripos($produit['libelle'], $searchQuery) !== false) {
+                    $resultats[] = [
+                        'date' => $facture->getCreatedAt()->format('Y-m-d H:i'),
+                        'produit_libelle' => $produit['libelle'], // ou l'index utilisé pour le nom
+                        'quantite' => $produit['quantite'],
+                        'prix_vente' => $produit['prixVente'],
+                        'montant' => $produit['montant'],
+                        'caisse' => $facture?->getcaisse()?->getUsername(),
+                    ];
+                }
+            }
+        }
+
+        return $resultats;
+    }
 }
