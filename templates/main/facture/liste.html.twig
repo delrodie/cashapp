@@ -38,7 +38,7 @@
 
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
+                            {#<div class="table-responsive">
                                 <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
                                     <thead>
                                     <tr>
@@ -75,6 +75,10 @@
                                     {% endfor %}
                                     </tbody>
                                 </table>
+                            </div>#}
+
+                            <div id="factures-list">
+                                {# Le bundle va générer le squelette du tableau ici #}
                             </div>
 
                         </div>
@@ -103,5 +107,13 @@
                 'copy', 'excel', 'pdf'
             ]
         } );
+    </script>
+
+    <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+    <script>
+        $(function() {
+            // Initialisation automatique via le bundle
+            $('#factures-list').initDataTables({{ datatable_settings(datatable) }});
+        });
     </script>
 {% endblock %}
