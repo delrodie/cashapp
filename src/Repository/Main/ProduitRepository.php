@@ -102,4 +102,19 @@ class ProduitRepository extends ServiceEntityRepository
             ->getQuery()->getResult()
             ;
     }
+
+    /**
+     * Calcule la valeur totale du stock (Achat, Vente, Bénéfice) directement en SQL.
+     */
+    public function getValeurStockTotals(): array
+    {
+        // En SQL, on gère le "if ($stock < 0) $stock = 0" avec un CASE WHEN ou GREATEST
+        return $this->createQueryBuilder('p')
+            ->select('
+                SUM(p.prixVente * CASE WHEN p.stock < 0 THEN 0 ELSE p.stock END) as vente,
+                SUM(p.prixAchat * CASE WHEN p.stock < 0 THEN 0 ELSE p.stock END) as achat
+            ')
+            ->getQuery()
+            ->getSingleResult();
+    }
 }

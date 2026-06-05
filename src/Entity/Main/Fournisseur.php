@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: FournisseurRepository::class)]
+#[ORM\Table(name: "fournisseur")]
 class Fournisseur implements \JsonSerializable
 {
     #[ORM\Id]
