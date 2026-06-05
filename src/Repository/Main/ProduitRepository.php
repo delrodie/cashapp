@@ -4,6 +4,7 @@ namespace App\Repository\Main;
 
 use App\Entity\Main\Produit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -116,5 +117,37 @@ class ProduitRepository extends ServiceEntityRepository
             ')
             ->getQuery()
             ->getSingleResult();
+    }
+
+    public function findDataTablesProduits(int $page = 1, int $limit = 10, ?string $search = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.categorie', 'c')
+            ->addSelect('c')
+            ->orderBy('p.id', 'DESC');
+
+        // Si l'utilisateur tape une recherche dans DataTables
+        if ($search) {
+            $qb->where('p.libelle LIKE :search')
+                ->orWhere('p.codebarre LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        $query = $qb->getQuery()
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return new Paginator($query);
+    }
+
+    public function findOneById($id)
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->leftJoin('p.categorie', 'c')
+            ->where('p.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()->getOneOrNullResult()
+            ;
     }
 }
