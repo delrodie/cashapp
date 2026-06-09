@@ -203,7 +203,8 @@
                 forceRaw: true
             });
 
-            const response = await fetch('{{ path('api_get_zpl')}}', {
+            console.log('{{ absolute_url(path('api_get_zpl')) }}')
+            const response = await fetch('{{ absolute_url(path('api_get_zpl')) }}', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -220,7 +221,7 @@
             console.log("✅ Impression envoyée automatiquement !");
             // alert("✅ Impression envoyée !"); // Optionnel : commenter si tu ne veux pas d'alerte
 
-        }} catch (err) {
+        } catch (err) {
             console.error("Erreur complète :", err);
             alert("❌ Erreur d'impression : " + (err.message || err));
         }
