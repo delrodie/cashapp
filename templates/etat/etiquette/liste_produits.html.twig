@@ -162,7 +162,7 @@
                 if (selectedIds.size === 0) return;
                 const ids = Array.from(selectedIds).join(',');
                 // Ouvre la page d'impression multiple dans un nouvel onglet
-                window.open('/etiquette/multiple/print?ids=' + ids, '_blank');
+                window.open('{{ path('app_main_etiquette_multiple') }}?ids=' + ids, '_blank');
             });
         });
     </script>
