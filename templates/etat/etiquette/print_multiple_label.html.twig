@@ -161,7 +161,7 @@
             const printJobs = [];
 
             for (const produit of produits) {
-                const response = await fetch('{{ path('api_get_zpl')}}', {
+                const response = await fetch('{{ absolute_url(path('api_get_zpl')) }}', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(produit)
