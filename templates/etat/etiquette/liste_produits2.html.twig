@@ -331,7 +331,7 @@
             $('#btn-imprimer-selection').on('click', function () {
                 if (selectedIds.size === 0) return;
                 const ids = Array.from(selectedIds).join(',');
-                window.open('/etiquette/multiple/print?ids=' + ids, '_blank');
+                window.open('{{ path('app_main_etiquette_multiple') }}?ids=' + ids, '_blank');
             });
         });
     </script>
