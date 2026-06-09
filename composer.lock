@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "750c11a308633ebcd346e499f4f0ee43",
+    "content-hash": "f98edb35b1504255ac7ad3c95302a355",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2449,6 +2449,57 @@
                 "source": "https://github.com/php-fig/log/tree/3.0.0"
             },
             "time": "2021-07-14T16:46:02+00:00"
+        },
+        {
+            "name": "robgridley/zebra",
+            "version": "v2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/robgridley/zebra.git",
+                "reference": "aed6c02c1976db5864e917ad8585ac11d8514bde"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/robgridley/zebra/zipball/aed6c02c1976db5864e917ad8585ac11d8514bde",
+                "reference": "aed6c02c1976db5864e917ad8585ac11d8514bde",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1.0"
+            },
+            "require-dev": {
+                "phpspec/phpspec": "^7.1"
+            },
+            "suggest": {
+                "ext-gd": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Zebra\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Gridley",
+                    "email": "me@robgridley.com"
+                }
+            ],
+            "description": "PHP ZPL builder, image conversion and a basic client for network-connected Zebra label printers.",
+            "keywords": [
+                "image",
+                "zebra",
+                "zpl"
+            ],
+            "support": {
+                "issues": "https://github.com/robgridley/zebra/issues",
+                "source": "https://github.com/robgridley/zebra/tree/v2.0.2"
+            },
+            "time": "2022-01-18T21:33:15+00:00"
         },
         {
             "name": "symfony/asset",
@@ -9912,7 +9963,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -9920,6 +9971,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
 }

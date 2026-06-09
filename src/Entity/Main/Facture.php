@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 
 #[ORM\Entity(repositoryClass: FactureRepository::class)]
+#[ORM\Table(name: "facture")]
 class Facture implements \JsonSerializable
 {
     #[ORM\Id]

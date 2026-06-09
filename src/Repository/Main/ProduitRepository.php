@@ -4,6 +4,7 @@ namespace App\Repository\Main;
 
 use App\Entity\Main\Produit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -100,6 +101,53 @@ class ProduitRepository extends ServiceEntityRepository
             ->leftJoin('p.categorie', 'c')
             ->where('p.stock > 0')
             ->getQuery()->getResult()
+            ;
+    }
+
+    /**
+     * Calcule la valeur totale du stock (Achat, Vente, Bénéfice) directement en SQL.
+     */
+    public function getValeurStockTotals(): array
+    {
+        // En SQL, on gère le "if ($stock < 0) $stock = 0" avec un CASE WHEN ou GREATEST
+        return $this->createQueryBuilder('p')
+            ->select('
+                SUM(p.prixVente * CASE WHEN p.stock < 0 THEN 0 ELSE p.stock END) as vente,
+                SUM(p.prixAchat * CASE WHEN p.stock < 0 THEN 0 ELSE p.stock END) as achat
+            ')
+            ->getQuery()
+            ->getSingleResult();
+    }
+
+    public function findDataTablesProduits(int $page = 1, int $limit = 10, ?string $search = null): Paginator
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->leftJoin('p.categorie', 'c')
+            ->addSelect('c')
+            ->orderBy('p.id', 'DESC');
+
+        // Si l'utilisateur tape une recherche dans DataTables
+        if ($search) {
+            $qb->where('p.libelle LIKE :search')
+                ->orWhere('p.codebarre LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        $query = $qb->getQuery()
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        return new Paginator($query);
+    }
+
+    public function findOneById($id)
+    {
+        return $this->createQueryBuilder('p')
+            ->addSelect('c')
+            ->leftJoin('p.categorie', 'c')
+            ->where('p.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()->getOneOrNullResult()
             ;
     }
 }

@@ -1,0 +1,215 @@
+{# templates/print/etiquette.html.twig #}
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Impression Étiquettes</title>
+    <style>
+        body{
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            flex-direction: column;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-close{
+            background: darkred;
+        }
+
+        /* Style général du tableau */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 14px;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* En-tête */
+        .table thead {
+            background-color: #f5f7fa;
+        }
+
+        .table thead th {
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        /* Corps */
+        .table tbody td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #555;
+        }
+
+        /* Hover sur les lignes */
+        .table tbody tr:hover {
+            background-color: #f0f8ff;
+            transition: background-color 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        .table-responsive {
+            width: 60%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Optionnel : arrondir les coins */
+        .table {
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+<body>
+<h3>Impression Multiple en cours...</h3>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Reference</th>
+            <th>Categorie</th>
+            <th>Libelle</th>
+            <th>Montant</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for produit in produits %}
+            <tr>
+                <td>{{ produit.reference }}</td>
+                <td>{{ produit.categorie ? produit.categorie.libelle : '-' }}</td>
+                <td>{{ produit.libelle }}</td>
+                <td>{{ produit.prixVente }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{#<button onclick="printMultipleLabels()">Réimprimer tout</button>#}
+<div class="no-print" style="margin-top: 50px; text-align: center;">
+    {#    <button onclick="window.print()">🖨️ Imprimer l'étiquette</button>#}
+    <button onclick="printMultipleLabels()" style="margin: 20px;">🖨️ Réimprimer tout</button>
+    <button onclick="window.close()" accesskey="0" class="btn-close">Fermer la page</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.6/qz-tray.js"></script>
+<script>
+    const PRINTER_NAME = "Honeywell-PC41E-Raw";
+
+    const listProduits = [
+        {% for produit in produits %}
+            { libelle: "{{ produit.libelle|escape('js') }}", prixVente: {{ produit.prixVente }}, reference: "{{ produit.reference }}", codebarre: "{{ produit.codebarre ?? produit.reference }}", categorie: {libelle: "{{ produit.categorie.libelle|escape('js')}}"} },
+        {% endfor %}
+    ];
+
+    async function printMultipleLabels(produits = null) {
+        try {
+            if (!qz.websocket.isActive()) {
+                qz.api.showDebug(true);
+                await qz.websocket.connect({
+                    host: "localhost",
+                    port: { secure: [], insecure: [8182] },
+                    usingSecure: false
+                });
+                console.log("✅ Connecté à QZ Tray");
+            }
+
+            const config = qz.configs.create(PRINTER_NAME, {
+                encoding: "UTF-8",
+                forceRaw: true
+            });
+
+            // Si aucun tableau n'est passé, on utilise les données actuelles
+            if (!produits) {
+                // produits = [getCurrentProduitData()]; // Une seule étiquette
+                produits = listProduits; // Une seule étiquette
+            }
+
+            console.log(`🚀 Impression de ${produits.length} étiquette(s)...`);
+
+            // Préparation de tous les ZPL
+            const printJobs = [];
+
+            for (const produit of produits) {
+                const response = await fetch('/api/etiquette/print/zpl', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(produit)
+                });
+
+                const { zpl } = await response.json();
+                printJobs.push(zpl);
+            }
+
+            // Impression de tous les ZPL en une seule fois
+            await qz.print(config, printJobs);
+
+            console.log("✅ Toutes les étiquettes ont été envoyées avec succès !");
+            alert(`✅ ${produits.length} étiquette(s) envoyée(s) avec succès !`);
+
+        } catch (err) {
+            console.error("Erreur complète :", err);
+            alert("❌ Erreur lors de l'impression multiple : " + (err.message || err));
+        }
+    }
+
+    // Données du produit actuel (pour impression simple)
+    {#function getCurrentProduitData() {#}
+    {#    return {#}
+    {#        libelle: "{{ produit.libelle|escape('js') }}",#}
+    {#        prixVente: {{ produit.prixVente }},#}
+    {#        reference: "{{ produit.reference }}",#}
+    {#        codebarre: "{{ produit.codebarre ?? produit.reference }}",#}
+    {#        categorie: {#}
+    {#            libelle: "{{ produit.categorie.libelle|escape('js') }}"#}
+    {#        }#}
+    {#    };#}
+    {#}#}
+
+    // ====================== IMPRESSION AUTOMATIQUE ======================
+    window.addEventListener('load', async () => {
+        console.log("🚀 Page chargée → Impression automatique...");
+        await printMultipleLabels(); // Imprime 1 étiquette par défaut
+    });
+
+    // Bouton pour réimprimer manuellement
+    function printMultipleLabelsManual() {
+        printMultipleLabels();
+    }
+
+    // Exemple : impression de 5 étiquettes
+
+
+</script>
+</body>
+</html>

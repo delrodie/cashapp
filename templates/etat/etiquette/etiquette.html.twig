@@ -1,0 +1,88 @@
+{# templates/print/etiquette.html.twig #}
+<html lang="fr">
+<head>
+
+</head>
+<body>
+
+<div id="notification-zone"></div>
+
+<button id="btn-print-{{ produit.id }}"
+        class="btn btn-primary"
+        onclick="imprimerEtiquette({{ produit.id }})">
+    🖨️ Imprimer l'étiquette
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.js"></script>
+
+<script>
+
+    qz.websocket.connect().then(() => qz.printers.find()).then(console.log);
+
+    /**
+     * Lance l'impression ZPL via QZ Tray
+     * @param {number} produitId
+     */
+    async function imprimerEtiquette(produitId) {
+
+        const btn = document.getElementById('btn-print-' + produitId);
+        if (btn) btn.disabled = true;
+
+        console.log('le bouton')
+        console.log(btn)
+
+        try {
+            // 1. Connexion à QZ Tray (WebSocket local wss://localhost:8181)
+            // if (!qz.websocket.isActive()) {
+            //     await qz.websocket.connect();
+            // }
+
+            // 2. Récupération du ZPL depuis Symfony
+            const response = await fetch(`/api/etiquette/${produitId}`);
+            console.log('Recuperation du ZPL')
+            console.log(response.json())
+            if (!response.ok) throw new Error('Erreur serveur : ' + response.status);
+            const data = await response.json();
+
+            // 3. Configuration de l'imprimante
+            //    Nom EXACT tel qu'il apparaît dans Windows > Périphériques et imprimantes
+            const config = qz.configs.create('Honeywell PC41E-D (203 dpi) - DP', {
+                raw: true  // Mode RAW = on envoie le ZPL directement, sans pilote
+            });
+
+            // 4. Envoi du ZPL brut à l'imprimante
+            await qz.print(config, [{
+                type  : 'raw',
+                format: 'plain',
+                data  : data.zpl
+            }]);
+
+            // Feedback utilisateur
+            afficherNotification('✅ Étiquette imprimée — ' + data.produit, 'success');
+
+        } catch (err) {
+            console.error(err);
+
+            if (err.message.includes('Unable to establish connection')) {
+                afficherNotification('❌ QZ Tray non démarré. Lancez QZ Tray sur ce poste.', 'danger');
+            } else {
+                afficherNotification('❌ Erreur impression : ' + err.message, 'danger');
+            }
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function afficherNotification(message, type) {
+        // Adaptable à Bootstrap Toast ou Toastr selon ton projet
+        const zone = document.getElementById('notification-zone');
+        if (!zone) return;
+        zone.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+    }
+</script>
+</body>
+</html>

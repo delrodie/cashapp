@@ -1,0 +1,4 @@
+name: cashapp
+base: ubuntu@24.04
+sdks:
+    - name: php

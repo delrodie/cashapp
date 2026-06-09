@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\NewStatistiques;
 use App\Service\Statistiques;
 use App\Service\Utilities;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,7 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    public function __construct(private Statistiques $statistiques)
+    public function __construct(
+        private Statistiques $statistiques,
+        private NewStatistiques $newStatistiques
+    )
     {
     }
 
@@ -26,11 +30,11 @@ class HomeController extends AbstractController
         ];
 
         return $this->render('home/index.html.twig',[
-            'valeurTotal' => $this->statistiques->valeurStock(),
-            'caisses' => $this->statistiques->recetteCaisse($periode['debut'],$periode['fin']),
-            'factures' => $this->statistiques->dernieresFactures(5),
-            'clients' => $this->statistiques->topClient(),
-            'recetteTotale' => $this->statistiques->recetteTotalParMois()
+            'valeurTotal' => $this->newStatistiques->valeurStock(),
+            'caisses' => $this->newStatistiques->recetteCaisse($periode['debut'],$periode['fin']),
+            'factures' => [], // $this->newStatistiques->dernieresFactures(5),
+            'clients' => [], // $this->statistiques->topClient(),
+            'recetteTotale' => $this->newStatistiques->recetteTotalParMois()
         ]);
     }
 

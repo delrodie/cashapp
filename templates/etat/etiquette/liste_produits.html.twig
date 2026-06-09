@@ -1,0 +1,173 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} Multiples étiquettes{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="card bg-light-info shadow-none position-relative overflow-hidden">
+            <div class="card-body px-4 py-3">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <h4 class="fw-semibold mb-8">Multiples étiquettes</h4>
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Etat</a></li>
+                                <li class="breadcrumb-item"><a class="text-muted" href="#">Etiquette</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Multiple</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center mb-n5">
+                            <span class="head-icon"><i class="ti-package"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Liste</h5></div>
+                                <div class="col-auto">
+                                    <button id="btn-imprimer-selection"
+                                            class="btn btn-primary"
+                                            disabled>
+                                        <i class="ti-printer me-1"></i>
+                                        Imprimer la sélection
+                                        (<span id="selection-count">0</span>)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div id="table-loader" class="table-loader">
+                                <div class="loader"></div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="liste-produits" class="table table-striped table-bordered" style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="select-all" title="Tout sélectionner" /></th>
+                                        <th>Référence</th>
+                                        <th>Code Barre</th>
+                                        <th>Libellé</th>
+                                        <th>Prix Achat</th>
+                                        <th>Prix Vente</th>
+                                        <th>Stock</th>
+                                        <th>Catégorie</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+    </div>
+
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/prism.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendor/DataTables/datatables.min.css') }}">
+    <link rel="stylesheet" href="{{ absolute_url(asset('assets/vendor/css/select2.min.css')) }}">
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendor/js/prism.js') }}"></script>
+    <script src="{{ asset('assets/vendor/DataTables/datatables.min.js') }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.full.min.js')) }}"></script>
+    <script src="{{ absolute_url(asset('assets/vendor/js/select2.min.js')) }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            const table = $('#liste-produits').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "ajax": "{{ path('api_produits_datatables_choix') }}",
+                "columns": [
+                    { "data": "checkbox", "orderable": false, "searchable": false, "width": "40px", "className": "text-center" },
+                    { "data": "reference" },
+                    { "data": "codebarre" },
+                    { "data": "libelle" },
+                    { "data": "prixAchat" },
+                    { "data": "prixVente" },
+                    { "data": "stock" },
+                    { "data": "categorie" },
+                    { "data": "actions", "orderable": false }
+                ],
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json"
+                }
+            });
+
+            // --- Gestion des sélections ---
+            // On utilise un Set pour mémoriser les IDs même entre pages
+            const selectedIds = new Set();
+
+            function updateBoutonImpression() {
+                const count = selectedIds.size;
+                $('#selection-count').text(count);
+                $('#btn-imprimer-selection').prop('disabled', count === 0);
+            }
+
+            // Délégation d'événement : capture les checkboxes même après rechargement AJAX
+            $('#liste-produits tbody').on('change', '.produit-checkbox', function () {
+                const id = $(this).val();
+                if ($(this).is(':checked')) {
+                    selectedIds.add(id);
+                } else {
+                    selectedIds.delete(id);
+                    $('#select-all').prop('checked', false);
+                }
+                updateBoutonImpression();
+            });
+
+            // Tout sélectionner / désélectionner (page courante)
+            $('#select-all').on('change', function () {
+                const checked = $(this).is(':checked');
+                $('#liste-produits tbody .produit-checkbox').each(function () {
+                    $(this).prop('checked', checked);
+                    const id = $(this).val();
+                    checked ? selectedIds.add(id) : selectedIds.delete(id);
+                });
+                updateBoutonImpression();
+            });
+
+            // Resync l'état des checkboxes après chaque chargement de page DataTables
+            table.on('draw', function () {
+                $('#select-all').prop('checked', false);
+                $('#liste-produits tbody .produit-checkbox').each(function () {
+                    if (selectedIds.has($(this).val())) {
+                        $(this).prop('checked', true);
+                    }
+                });
+            });
+
+            // --- Bouton impression multiple ---
+            $('#btn-imprimer-selection').on('click', function () {
+                if (selectedIds.size === 0) return;
+                const ids = Array.from(selectedIds).join(',');
+                // Ouvre la page d'impression multiple dans un nouvel onglet
+                window.open('/etiquette/multiple/print?ids=' + ids, '_blank');
+            });
+        });
+    </script>
+
+    <script>
+        $(".select2").select2();
+    </script>
+{% endblock %}

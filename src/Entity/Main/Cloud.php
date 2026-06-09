@@ -6,6 +6,7 @@ use App\Repository\Main\CloudRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CloudRepository::class)]
+#[ORM\Table(name: "cloud")]
 class Cloud
 {
     #[ORM\Id]

@@ -20,7 +20,7 @@ class Statistiques
     {
     }
 
-    public function valeurStock(): array
+    public function valeurStock_init(): array
     {
         $produits = $this->produitRepository->findAll();
         $vente=0; $achat=0;
