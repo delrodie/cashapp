@@ -41,6 +41,7 @@ class ApiProduitController extends AbstractController
         // 3. Formater les données pour le tableau JSON
         $data = [];
         foreach ($paginator as $produit) {
+            $url = $this->generateUrl('app_main_etiquette_print', ['id' => $produit->getId()]);
             $data[] = [
                 'reference' => $produit->getReference(),
                 'codebarre' => $produit->getCodebarre(),
@@ -53,7 +54,7 @@ class ApiProduitController extends AbstractController
 //                <a href="/produit/'.$produit->getId().'/edit" class="btn btn-sm btn-warning">Modifier</a>
 
                 'actions' => '
-                <a href="/etiquette/'.$produit->getId().'" class="text-center" target="_blank"><i class="ti-printer"></i></a>
+                <a href="'.$url.'" class="text-center" target="_blank"><i class="ti-printer"></i></a>
             '
             ];
         }
@@ -70,6 +71,7 @@ class ApiProduitController extends AbstractController
     #[Route('/choix', name: 'api_produits_datatables_choix', methods: ['GET'])]
     public function choix(Request $request): JsonResponse
     {
+
         // 1. Récupérer les paramètres envoyés automatiquement par DataTables
         $draw = $request->query->getInt('draw', 1);
         $start = $request->query->getInt('start', 0);
@@ -88,6 +90,7 @@ class ApiProduitController extends AbstractController
         // 3. Formater les données pour le tableau JSON
         $data = [];
         foreach ($paginator as $produit) {
+            $url = $this->generateUrl('app_main_etiquette_print', ['id' => $produit->getId()]);
             $data[] = [
                 'checkbox' => '<input type="checkbox" class="produit-checkbox" value="'.$produit->getId().'" />',
                 'id'        => $produit->getId(),
@@ -99,7 +102,7 @@ class ApiProduitController extends AbstractController
                 'stock'     => $produit->getStock(),
                 'categorie' => $produit->getCategorie()?->getLibelle() ?? 'Non défini',
                 'actions'   => '
-                    <a href="/etiquette/'.$produit->getId().'" class="text-center" target="_blank"><i class="ti-printer"></i></a>
+                    <a href="'.$url.'" class="text-center" target="_blank"><i class="ti-printer"></i></a>
                 ',
             ];
         }
