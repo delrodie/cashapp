@@ -323,4 +323,18 @@ class FactureRepository extends ServiceEntityRepository
         return $conn->executeQuery($sql)->fetchAllAssociative();
     }
 
+    /**
+     * Calcul des benefices
+     *
+     * @return array
+     */
+    public function findAllForBenefice(): array
+    {
+        return $this->createQueryBuilder('f')
+            ->select('f.id AS factureId', 'f.createdAt AS createdAt', 'f.produits AS produits', 'f.nap AS nap')
+            ->orderBy('f.createdAt', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }
