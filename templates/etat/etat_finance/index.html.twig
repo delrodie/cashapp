@@ -50,6 +50,7 @@
                                         <th class="text-center text-uppercase">#</th>
                                         <th class="text-center text-uppercase">Date</th>
                                         <th class="text-center text-uppercase">Montant</th>
+                                        <th class="text-center text-uppercase">Details</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -58,6 +59,9 @@
                                             <td>{{ loop.index }}</td>
                                             <td class="text-center">{{ recette.date ? recette.date|date('Y-m-d') : '' }}</td>
                                             <td class="text-end">{{ recette.totalMontant }}</td>
+                                            <td class="text-center">
+                                                <a href="#"><i class="ti-file"></i></a>
+                                            </td>
                                         </tr>
                                     {% else %}
                                         <tr>
