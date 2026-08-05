@@ -306,4 +306,21 @@ class FactureRepository extends ServiceEntityRepository
         return $detailsCaisse;
     }
 
+    /**
+     * Les recettes journalieres
+     */
+    public function getRecetteJournaliereNouveaux(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+        SELECT DATE(createdAt) as date, SUM(nap) as totalMontant
+        FROM facture
+        GROUP BY DATE(createdAt)
+        ORDER BY date DESC
+    ';
+
+        return $conn->executeQuery($sql)->fetchAllAssociative();
+    }
+
 }
