@@ -24,10 +24,8 @@ class EtatFinanceController extends AbstractController
     {
 
         $recettes = $this->statistiques->recetteJournaliere();
-        $montantTotal = 0;
-        foreach ($recettes as $recette){
-            $montantTotal += (int) $recette['totalMontant'];
-        }
+
+        $montantTotal = array_sum(array_column($recettes, 'totalMontant'));
 
         return $this->render('etat/etat_finance/index.html.twig', [
             'recettes' => $this->statistiques->recetteJournaliere(),

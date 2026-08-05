@@ -306,4 +306,35 @@ class FactureRepository extends ServiceEntityRepository
         return $detailsCaisse;
     }
 
+    /**
+     * Les recettes journalieres
+     */
+    public function getRecetteJournaliereNouveaux(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+        SELECT DATE(createdAt) as date, SUM(nap) as totalMontant
+        FROM facture
+        GROUP BY DATE(createdAt)
+        ORDER BY date DESC
+    ';
+
+        return $conn->executeQuery($sql)->fetchAllAssociative();
+    }
+
+    /**
+     * Calcul des benefices
+     *
+     * @return array
+     */
+    public function findAllForBenefice(): array
+    {
+        return $this->createQueryBuilder('f')
+            ->select('f.id AS factureId', 'f.createdAt AS createdAt', 'f.produits AS produits', 'f.nap AS nap')
+            ->orderBy('f.createdAt', 'DESC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 }

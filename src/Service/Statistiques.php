@@ -170,38 +170,29 @@ class Statistiques
 
     public function recetteJournaliere()
     {
-        $factures = $this->factureRepository->findBy([],['id'=>"DESC"]);
+        $nouveaux = $this->factureRepository->getRecetteJournaliereNouveaux();
+        $anciens  = $this->archiveFactureRepository->getRecetteJournaliereGlobale();
 
-        $napSumByDate = [];
-        foreach ($factures as $facture) {
-            $createdAt = $facture->getCreatedAt();
-            $formattedCreatedAt = $createdAt->format('Y-m-d');
-
-            $nap = $facture->getNap();
-
-            if (!isset($napSumByDate[$formattedCreatedAt])) {
-                $napSumByDate[$formattedCreatedAt] = 0;
+        // Fusion + agrégation des dates qui se chevauchent (si besoin)
+        $merged = [];
+        foreach (array_merge($nouveaux, $anciens) as $item) {
+            $date = $item['date'];
+            if (!isset($merged[$date])) {
+                $merged[$date] = 0;
             }
-
-            $napSumByDate[$formattedCreatedAt] += $nap;
+            $merged[$date] += (float) $item['totalMontant'];
         }
 
-        $nouveaux=[];
-        foreach ($napSumByDate as $date => $value ){
-            $nouveaux[]=[
+        $recettes = [];
+        foreach ($merged as $date => $total) {
+            $recettes[] = [
                 'date' => $date,
-                'totalMontant' => $value
+                'totalMontant' => $total,
             ];
         }
 
-        $aSupprimer = $this->archiveFactureRepository->findOneBy(['reference'=>"038058"]);
-        if ($aSupprimer){
-            $this->archiveFactureRepository->remove($aSupprimer, true);
-        }
-
-        $anciens = $this->archiveFactureRepository->getRecetteJournaliereGlobale();
-
-        $recettes = array_merge($nouveaux, $anciens); //dd($recettes);
+        // Tri décroissant par date
+        usort($recettes, fn($a, $b) => $b['date'] <=> $a['date']);
 
         return $recettes;
     }

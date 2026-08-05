@@ -14,7 +14,7 @@
                             <ol class="breadcrumb">
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Modules</a></li>
                                 <li class="breadcrumb-item"><a class="text-muted" href="#">Etats</a></li>
-                                <li class="breadcrumb-item" aria-current="page">factures</li>
+                                <li class="breadcrumb-item" aria-current="page">bénéfices</li>
                             </ol>
                         </nav>
                     </div>
@@ -31,59 +31,39 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="row">
-                                <div class="col"><h5 class="mb-2 fw-semibold fs-4">Totaux</h5></div>
-                                <div class="col">
-                                    <div class="action" style="font-size: 1.5rem; font-weight:bold; color: darkred"> {{ total ? total|number_format(0,'','.') }}  FCFA</div>
-                                </div>
-                            </div>
+
 
                         </div>
                         <div class="card-body">
                             <div id="table-loader" class="table-loader">
                                 <div class="loader"></div>
                             </div>
-                            <form action="{{ path('app_etat_facture_caisse') }}" method="post">
-                                <div class="row">
-                                    <div class="col-3 offset-2">
-                                        <label for="">Date début</label>
-                                        <input type="date" name="debut" class="form-control" required>
-                                    </div>
-                                    <div class="col-3">
-                                        <label for="">Date fin</label>
-                                        <input type="date" name="fin" class="form-control" required>
-                                    </div>
-                                    <div class="col-4 mt-3">
-                                        <button class="btn btn-primary">Filtrer</button>
-                                    </div>
-                                </div>
-                            </form>
                             <div class="table-responsive mt-5">
                                 <table id="listes" class="table  border table-striped table-bordered display text-nowrap">
                                     <thead>
                                     <tr>
-                                        <th class="text-center text-uppercase">#</th>
-                                        <th class="text-center text-uppercase">Caisse</th>
-                                        <th class="text-center text-uppercase">Montant</th>
-                                        <th class="text-center text-uppercase">Factures</th>
+                                        <th class="text-center text-uppercase">Année</th>
+                                        <th class="text-center text-uppercase">Recette (FCFA)</th>
+                                        <th class="text-center text-uppercase">Benefice (FCFA)</th>
+                                        <th class="text-center text-uppercase">Marge</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {% for caisse in caisses %}
+                                    {% for an, data in benefices %}
                                         <tr>
-                                            <td>{{ loop.index }}</td>
-                                            <td class="text-center">{{ caisse.user }}</td>
-                                            <td class="text-end">{{ caisse.montant }}</td>
-                                            <td class="text-center">{{ caisse.facture  }}</td>
+                                            <td class="text-center">{{ an }}</td>
+                                            <td class="text-end pe-5">{{ data.recette|number_format(0, ',', ' ') }} </td>
+                                            <td class="text-end pe-5">{{ data.benefice|number_format(0, ',', ' ') }} </td>
                                             <td class="text-center">
-                                                <a href="#" class="">details</a>
+                                                {% if data.recette > 0 %}
+                                                    {{ (data.benefice / data.recette * 100)|number_format(1) }} %
+                                                {% else %}
+                                                    —
+                                                {% endif %}
                                             </td>
                                         </tr>
-                                    {% else %}
-                                        <tr>
-                                            <td colspan="4">Aucune facture trouvée</td>
-                                        </tr>
                                     {% endfor %}
+
                                     </tbody>
                                 </table>
                             </div>

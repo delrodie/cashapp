@@ -58,20 +58,11 @@ class ApiFactureController extends AbstractController
         $data = json_decode($jsonContent, true);
 
         $client = $this->client($data['client']);
-        $facture = new Facture();
-        $facture->setCode($this->utilities->codeFacture());
-        $facture->setMontant($data['nap']);
-        $facture->setRemise($data['remise']);
-        $facture->setNap($data['nap']);
-        $facture->setVerse($data['verse']);
-        $facture->setMonnaie($data['monnaie']);
-        $facture->setProduits($data['produits']);
-        $facture->setCreatedAt(new \DateTime());
-        $facture->setClient($client);
-        $facture->setCaisse($this->getUser());
 
         $produits = $data['produits'];
-        foreach ($produits as $produit){
+
+        // On vérifie le stock ET on enrichit chaque ligne avec le prixAchat en vigueur
+        foreach ($produits as $index => $produit) {
             $entity = $this->produitRepository->findOneBy(['reference' => $produit['code']]);
             if (!$entity) return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
 
@@ -85,17 +76,30 @@ class ApiFactureController extends AbstractController
                 ], Response::HTTP_OK);
             }
 
-            $entity->setStock((int)$entity->getStock() - (int)$produit['quantite']);
+            // On fige le prixAchat du moment directement dans la ligne de la facture
+            $produits[$index]['prixAchat'] = (int) $entity->getPrixAchat();
+
+            $entity->setStock((int)$entity->getStock() - $requestQte);
             $this->entityManager->persist($entity);
         }
+
+        $facture = new Facture();
+        $facture->setCode($this->utilities->codeFacture());
+        $facture->setMontant($data['nap']);
+        $facture->setRemise($data['remise']);
+        $facture->setNap($data['nap']);
+        $facture->setVerse($data['verse']);
+        $facture->setMonnaie($data['monnaie']);
+        $facture->setProduits($produits); // <-- le tableau enrichi avec prixAchat, pas $data['produits']
+        $facture->setCreatedAt(new \DateTime());
+        $facture->setClient($client);
+        $facture->setCaisse($this->getUser());
 
         $this->factureRepository->save($facture, true);
         $this->entityManager->flush();
 
         notyf()->addSuccess("Facture enregistrée avec succès!");
 
-//        $jsonFacture = $this->serializer->serialize($facture, 'json', ['groups'=>"facture"]);
-//        dd($jsonFacture);
         return new JsonResponse($facture->getId(), Response::HTTP_CREATED,[],true);
     }
 
