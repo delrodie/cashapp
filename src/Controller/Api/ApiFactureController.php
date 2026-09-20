@@ -71,13 +71,14 @@ class ApiFactureController extends AbstractController
 
             if ($requestQte > $stock){
                 return new JsonResponse([
-                    'message' => "La quantité en stock du poduit {$entity->getLibelle()} est inférieure à la quantité en vente",
+                    'message' => "La quantité en stock du produit {$entity->getLibelle()} est inférieure à la quantité en vente",
                     'statut' => false
                 ], Response::HTTP_OK);
             }
 
             // On fige le prixAchat du moment directement dans la ligne de la facture
             $produits[$index]['prixAchat'] = (int) $entity->getPrixAchat();
+            //dump($produits);
 
             $entity->setStock((int)$entity->getStock() - $requestQte);
             $this->entityManager->persist($entity);
