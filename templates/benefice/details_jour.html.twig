@@ -1,0 +1,319 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- CSS DataTables & Extensions -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
+    <style>
+        /* Isolation du module - Style épuré Bleu & Blanc */
+        #facture-module-wrapper {
+            --primary-blue: #0d6efd;
+            --border-color: #dee2e6;
+            --bg-light: #f8f9fa;
+        }
+
+        #facture-module-wrapper .card-facture {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: #ffffff;
+            box-shadow: none !important;
+        }
+
+        #facture-module-wrapper #facturesTable {
+            border-collapse: collapse !important;
+            margin-bottom: 0 !important;
+        }
+
+        #facture-module-wrapper #facturesTable thead th {
+            background-color: var(--bg-light);
+            color: #212529;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px 12px;
+        }
+
+        #facture-module-wrapper #facturesTable tbody td {
+            padding: 10px 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
+            color: #212529;
+        }
+
+        #facture-module-wrapper .btn-toggle-details {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            color: var(--primary-blue);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        #facture-module-wrapper .btn-toggle-details:hover,
+        #facture-module-wrapper tr.shown .btn-toggle-details {
+            background: var(--primary-blue);
+            color: #ffffff;
+            border-color: var(--primary-blue);
+        }
+
+        /* Styling du bloc enfant */
+        #facture-module-wrapper .nested-table-wrapper {
+            background-color: var(--bg-light);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            margin: 8px 0;
+        }
+
+        #facture-module-wrapper .table-nested {
+            margin-bottom: 0;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+        }
+
+        #facture-module-wrapper .table-nested thead th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-size: 0.8rem;
+            padding: 6px 8px;
+        }
+
+        #facture-module-wrapper .table-nested tbody td {
+            padding: 6px 8px;
+            font-size: 0.85rem;
+        }
+
+        #facture-module-wrapper .badge-outline-primary {
+            border: 1px solid var(--primary-blue);
+            color: var(--primary-blue);
+            background: transparent;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        #facture-module-wrapper .dt-buttons .btn {
+            border-radius: 4px !important;
+            font-size: 0.85rem;
+            box-shadow: none !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div id="facture-module-wrapper" class="container-fluid my-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-1 text-primary">Suivi des Factures</h4>
+                <p class="text-muted small mb-0">Consultez l'historique et exportez les détails des factures à la demande.</p>
+            </div>
+        </div>
+
+        <div class="card card-facture p-3">
+            <div class="table-responsive">
+                <table id="facturesTable" class="table align-middle w-100">
+                    <thead>
+                    <tr>
+                        <th style="width: 30px;"></th>
+                        <th>Référence</th>
+                        <th>Date & Heure</th>
+                        <th>Caisse</th>
+                        <th>Montant Total</th>
+                        <th>Bénéfice Total</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for facture in factures %}
+                        {% set searchTerms = [] %}
+                        {% for prod in facture.produitsAvecBenefice %}
+                            {% set searchTerms = searchTerms|merge([prod.code, prod.libelle]) %}
+                        {% endfor %}
+
+                        <tr data-id="{{ facture.id }}">
+                            <td class="text-center">
+                                <button class="btn-toggle-details" type="button">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                            </td>
+                            <td class="fw-bold">#{{ facture.code }}</td>
+                            <td>{{ facture.createdAt|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <span class="badge badge-outline-primary">
+                                    {{ facture.caisse ? facture.caisse.username : 'N/A' }}
+                                </span>
+                            </td>
+                            <td class="fw-bold text-end">{{ facture.montant|number_format(0, ',', ' ') }} </td>
+                            <td data-search="{{ facture.beneficeTotal }} {{ searchTerms|join(' ') }}" class="text-end">
+                                <span class="fw-bold text-primary">
+                                    {{ facture.beneficeTotal|number_format(0, ',', ' ') }}
+                                </span>
+                            </td>
+
+                            <!-- Template avec barre d'outils d'exportation propre au tableau enfant -->
+                            <template id="tmpl-products-{{ facture.id }}">
+                                <div class="nested-table-wrapper">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-secondary small">PRODUITS ACHETÉS (#{{ facture.code }})</span>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary btn-export-child" data-type="excel">
+                                                <i class="bi bi-file-earmark-excel me-1"></i> Excel Produit
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-export-child" data-type="pdf">
+                                                <i class="bi bi-file-earmark-pdf me-1"></i> PDF Produit
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <table class="table table-nested align-middle child-table-export">
+                                        <thead>
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Libellé</th>
+                                            <th class="text-end">P. Achat</th>
+                                            <th class="text-end">P. Vente</th>
+                                            <th class="text-center">Qté</th>
+                                            <th class="text-end">Total</th>
+                                            <th class="text-end">Bénéfice</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for prod in facture.produitsAvecBenefice %}
+                                            <tr>
+                                                <td>{{ prod.code }}</td>
+                                                <td>{{ prod.libelle }}</td>
+                                                <td class="text-end">{{ prod.prixAchat|number_format(0, ',', ' ') }} </td>
+                                                <td class="text-end">{{ prod.prixVente|number_format(0, ',', ' ') }} </td>
+                                                <td class="text-center">{{ prod.quantite }}</td>
+                                                <td class="text-end">{{ prod.montant|number_format(0, ',', ' ') }} </td>
+                                                <td class="text-end">{{ prod.benefice|number_format(0, ',', ' ') }} </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 1. Initialisation du Tableau Parent (Export global)
+            var table = $('#facturesTable').DataTable({
+                dom: '<"d-flex flex-column flex-md-row justify-content-between align-items-center mb-3"Bf>rt<"d-flex flex-column flex-md-row justify-content-between align-items-center mt-3"ip>',
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel (Factures)',
+                        className: 'btn btn-sm btn-primary me-1',
+                        exportOptions: { columns: [1, 2, 3, 4, 5] }
+                    },
+                    {
+                        extend: 'pdfHtml5',
+                        text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF (Factures)',
+                        className: 'btn btn-sm btn-outline-primary me-1',
+                        exportOptions: { columns: [1, 2, 3, 4, 5] }
+                    }
+                ],
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/fr-FR.json'
+                },
+                order: [[2, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: 0 }
+                ]
+            });
+
+            // 2. Gestion de l'ouverture/fermeture des détails
+            $('#facturesTable tbody').on('click', '.btn-toggle-details', function () {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+                var factureId = tr.data('id');
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    var templateContent = $('#tmpl-products-' + factureId).html();
+                    row.child(templateContent).show();
+                    tr.addClass('shown');
+                }
+            });
+
+            // 3. Export à la demande du Tableau Enfant (Niveau 2)
+            $('#facturesTable tbody').on('click', '.btn-export-child', function() {
+                var btn = $(this);
+                var type = btn.data('type');
+                var wrapper = btn.closest('.nested-table-wrapper');
+                var childTable = wrapper.find('.child-table-export');
+                var factureRef = btn.closest('tr').prev('tr').find('td:nth-child(2)').text().trim();
+
+                // On transforme temporairement le sous-tableau en DataTable pour exploiter son moteur d'exportation
+                var tempTable = childTable.DataTable({
+                    dom: 'B',
+                    retrieve: true,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            title: 'Detail_Produits_' + factureRef
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            title: 'Detail Produits - Facture ' + factureRef
+                        }
+                    ]
+                });
+
+                // Déclencher l'export correspondant puis détruire l'instance temporaire
+                if (type === 'excel') {
+                    tempTable.button('.buttons-excel').trigger();
+                } else if (type === 'pdf') {
+                    tempTable.button('.buttons-pdf').trigger();
+                }
+
+                tempTable.destroy();
+            });
+
+            // Reconstitution lors de la recherche
+            table.on('search.dt', function() {
+                var searchValue = table.search().toLowerCase();
+                if (searchValue.length > 0) {
+                    table.rows({ filter: 'applied' }).every(function() {
+                        var tr = $(this.node());
+                        var factureId = tr.data('id');
+                        var templateContent = $('#tmpl-products-' + factureId).html();
+                        this.child(templateContent).show();
+                        tr.addClass('shown');
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

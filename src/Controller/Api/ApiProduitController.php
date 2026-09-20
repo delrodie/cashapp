@@ -36,7 +36,7 @@ class ApiProduitController extends AbstractController
         // Nous allons créer cette méthode juste après
         $paginator = $this->produitRepository->findDataTablesProduits($page, $length, $search);
 
-        $totalRecords = count($paginator); // Total sans filtre
+        $totalRecords = count($paginator); // Todtal sans filtre
 
         // 3. Formater les données pour le tableau JSON
         $data = [];
