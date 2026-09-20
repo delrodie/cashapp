@@ -337,4 +337,20 @@ class FactureRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
+    public function findFactureByJour(string $jour)
+    {
+        $debut = new \DateTimeImmutable($jour . ' 00:00:00');
+        $fin = $debut->setTime(23, 59, 59);
+
+        return $this->createQueryBuilder('f')
+            ->addSelect('c')
+            ->innerJoin('f.caisse', 'c')
+            ->andWhere('f.createdAt BETWEEN :debut AND :fin')
+            ->setParameter('debut', $debut)
+            ->setParameter('fin', $fin)
+            ->orderBy('f.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

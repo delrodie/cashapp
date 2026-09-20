@@ -51,7 +51,7 @@
                                     <tbody>
                                     {% for jour, data in beneficeParJour %}
                                         <tr>
-                                            <td class="text-center">{{ jour }}</td>
+                                            <td class="text-center"><a href="{{ path('app_main_detailsbenefice_jour', {'jour': jour }) }}">{{ jour }}</a></td>
                                             <td class="text-end pe-5">{{ data.recette|number_format(0, ',', ' ') }} </td>
                                             <td class="text-end pe-5">{{ data.benefice|number_format(0, ',', ' ') }} </td>
                                             <td class="text-center">
